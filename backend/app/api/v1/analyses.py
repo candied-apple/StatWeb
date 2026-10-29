@@ -1,6 +1,6 @@
 import uuid
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Query
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -215,6 +215,7 @@ def list_dataset_analyses(
 @router.get("/{analysis_id}/pdf")
 def export_analysis_pdf(
     analysis_id: uuid.UUID,
+    lang: str = Query("tr", pattern="^(tr|en)$"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -228,7 +229,7 @@ def export_analysis_pdf(
     if not run:
         raise HTTPException(status_code=404, detail="Analysis run not found")
 
-    pdf_bytes = ReportService.generate_pdf_report(run)
+    pdf_bytes = ReportService.generate_pdf_report(run, lang=lang)
     safe_name = run.analysis_type
     return Response(
         content=pdf_bytes,

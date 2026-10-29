@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useUIStore, WorkspaceTab } from '@/stores/use-ui-store';
 import { Table, ListFilter, BarChart2 } from 'lucide-react';
 import { Dataset } from '@/types/dataset';
@@ -8,12 +9,13 @@ interface StatusBarProps {
 }
 
 export const StatusBar: React.FC<StatusBarProps> = ({ dataset }) => {
+  const { t } = useTranslation();
   const { activeTab, setActiveTab } = useUIStore();
 
   const tabs: { id: WorkspaceTab; label: string; icon: React.ReactNode }[] = [
-    { id: 'data', label: 'Veri Görünümü', icon: <Table className="h-3.5 w-3.5 mr-1.5" /> },
-    { id: 'variable', label: 'Değişken Görünümü', icon: <ListFilter className="h-3.5 w-3.5 mr-1.5" /> },
-    { id: 'output', label: 'Çıktı Görüntüleyici', icon: <BarChart2 className="h-3.5 w-3.5 mr-1.5" /> },
+    { id: 'data', label: t('statusBar.dataView'), icon: <Table className="h-3.5 w-3.5 mr-1.5" /> },
+    { id: 'variable', label: t('statusBar.variableView'), icon: <ListFilter className="h-3.5 w-3.5 mr-1.5" /> },
+    { id: 'output', label: t('statusBar.outputViewer'), icon: <BarChart2 className="h-3.5 w-3.5 mr-1.5" /> },
   ];
 
   return (
@@ -45,15 +47,15 @@ export const StatusBar: React.FC<StatusBarProps> = ({ dataset }) => {
           <>
             <span>{dataset.original_filename}</span>
             <span>|</span>
-            <span>{dataset.row_count} Gözlem</span>
+            <span>{dataset.row_count} {t('common.cases')}</span>
             <span>|</span>
-            <span>{dataset.column_count} Değişken</span>
+            <span>{dataset.column_count} {t('common.variables')}</span>
             <span>|</span>
           </>
         ) : null}
         <span className="flex items-center text-emerald-700 font-medium">
           <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block mr-1.5 animate-pulse" />
-          İstatistik İşlemcisi Hazır
+          {t('statusBar.engineReady')}
         </span>
       </div>
     </footer>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   FileSpreadsheet,
   Upload,
@@ -14,8 +15,10 @@ import {
 import { useUIStore } from '@/stores/use-ui-store';
 import { useDataset } from '@/hooks/use-datasets';
 import { Button } from '@/components/ui/button';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const AppHeader: React.FC = () => {
+  const { t } = useTranslation();
   const {
     activeDatasetId,
     setUploadOpen,
@@ -48,10 +51,13 @@ export const AppHeader: React.FC = () => {
       <div className="flex items-center justify-between px-3 py-1 bg-slate-900 text-slate-100 text-xs font-semibold">
         <div className="flex items-center space-x-2">
           <FileSpreadsheet className="h-4 w-4 text-blue-400" />
-          <span>StatWeb — İstatistiksel Analiz Platformu (SPSS Akademik İş Akışı)</span>
+          <span>{t('common.appName')} — {t('common.tagline')}</span>
         </div>
-        <div className="text-[11px] text-slate-400">
-          Bağımsız SciPy & Statsmodels Motoru | Yerel Depolama Soyutlaması
+        <div className="flex items-center space-x-3">
+          <span className="text-[11px] text-slate-400 hidden sm:inline">
+            {t('common.backendEngineInfo')}
+          </span>
+          <LanguageSwitcher />
         </div>
       </div>
 
@@ -64,7 +70,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => handleMenuClick('file')}
               className={`px-2 py-1 rounded hover:bg-slate-300 ${activeMenu === 'file' ? 'bg-slate-300 font-semibold' : ''}`}
             >
-              Dosya
+              {t('menu.file')}
             </button>
             {activeMenu === 'file' && (
               <div
@@ -76,14 +82,14 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center"
                 >
                   <PlusCircle className="h-3.5 w-3.5 mr-2 text-slate-500" />
-                  Yeni Proje...
+                  {t('menu.newProject')}
                 </button>
                 <button
                   onClick={() => setUploadOpen(true)}
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center"
                 >
                   <Upload className="h-3.5 w-3.5 mr-2 text-slate-500" />
-                  Veri İçe Aktar (CSV, SAV, XLSX)...
+                  {t('menu.importData')}
                 </button>
                 <div className="border-t border-slate-200 my-1" />
                 <button
@@ -92,7 +98,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
                 >
                   <Download className="h-3.5 w-3.5 mr-2 text-slate-500" />
-                  Veriyi CSV Olarak Dışa Aktar
+                  {t('menu.exportCsv')}
                 </button>
                 <button
                   onClick={() => exportDataset('xlsx')}
@@ -100,7 +106,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
                 >
                   <Download className="h-3.5 w-3.5 mr-2 text-emerald-600" />
-                  Veriyi Excel Olarak Dışa Aktar
+                  {t('menu.exportXlsx')}
                 </button>
               </div>
             )}
@@ -112,11 +118,11 @@ export const AppHeader: React.FC = () => {
               onClick={() => handleMenuClick('transform')}
               className={`px-2 py-1 rounded hover:bg-slate-300 ${activeMenu === 'transform' ? 'bg-slate-300 font-semibold' : ''}`}
             >
-              Dönüştür
+              {t('menu.transform')}
             </button>
             {activeMenu === 'transform' && (
               <div
-                className="absolute left-0 mt-1 w-60 bg-white border border-slate-300 shadow-lg rounded-sm py-1 z-50 text-xs"
+                className="absolute left-0 mt-1 w-64 bg-white border border-slate-300 shadow-lg rounded-sm py-1 z-50 text-xs"
                 onClick={closeMenu}
               >
                 <button
@@ -125,7 +131,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
                 >
                   <Calculator className="h-3.5 w-3.5 mr-2 text-blue-600" />
-                  Değişken Hesapla (Compute)...
+                  {t('menu.computeVariable')}
                 </button>
                 <button
                   onClick={() => setRecodeOpen(true)}
@@ -133,7 +139,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
                 >
                   <Shuffle className="h-3.5 w-3.5 mr-2 text-indigo-600" />
-                  Değişkeni Yeniden Kodla (Recode)...
+                  {t('menu.recodeVariable')}
                 </button>
                 <div className="border-t border-slate-200 my-1" />
                 <button
@@ -142,7 +148,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
                 >
                   <Plus className="h-3.5 w-3.5 mr-2 text-slate-500" />
-                  Yeni Değişken Ekle...
+                  {t('menu.addVariable')}
                 </button>
               </div>
             )}
@@ -154,7 +160,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => handleMenuClick('analyze')}
               className={`px-2 py-1 rounded hover:bg-slate-300 ${activeMenu === 'analyze' ? 'bg-slate-300 font-semibold' : ''}`}
             >
-              Çözümle
+              {t('menu.analyze')}
             </button>
             {activeMenu === 'analyze' && (
               <div
@@ -162,7 +168,7 @@ export const AppHeader: React.FC = () => {
                 onClick={closeMenu}
               >
                 <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  Betimsel İstatistikler
+                  {t('menu.descriptiveStats')}
                 </div>
                 <button
                   onClick={() => setDescriptivesOpen(true)}
@@ -170,7 +176,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Play className="h-3.5 w-3.5 mr-2 text-blue-600" />
-                  Betimsel İstatistikler...
+                  {t('menu.descriptives')}
                 </button>
                 <button
                   onClick={() => setFrequenciesOpen(true)}
@@ -178,7 +184,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Play className="h-3.5 w-3.5 mr-2 text-indigo-600" />
-                  Frekans Dağılımı...
+                  {t('menu.frequencies')}
                 </button>
                 <button
                   onClick={() => setCrosstabsOpen(true)}
@@ -186,12 +192,12 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Play className="h-3.5 w-3.5 mr-2 text-purple-600" />
-                  Çapraz Tablolar (Ki-Kare)...
+                  {t('menu.crosstabs')}
                 </button>
 
                 <div className="border-t border-slate-200 my-1" />
                 <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  Ortalamaları Karşılaştır
+                  {t('menu.compareMeans')}
                 </div>
                 <button
                   onClick={() => setTTestOpen(true)}
@@ -199,7 +205,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Play className="h-3.5 w-3.5 mr-2 text-emerald-600" />
-                  T-Testi (Bağımsız / Eşleştirilmiş)...
+                  {t('menu.tTest')}
                 </button>
                 <button
                   onClick={() => setAnovaOpen(true)}
@@ -207,12 +213,12 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Play className="h-3.5 w-3.5 mr-2 text-emerald-600" />
-                  Tek Yönlü ANOVA...
+                  {t('menu.anova')}
                 </button>
 
                 <div className="border-t border-slate-200 my-1" />
                 <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                  İlişkisel Modeller
+                  {t('menu.relationalModels')}
                 </div>
                 <button
                   onClick={() => setCorrelationOpen(true)}
@@ -220,7 +226,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Play className="h-3.5 w-3.5 mr-2 text-amber-600" />
-                  İki Değişkenli Korelasyon...
+                  {t('menu.correlate')}
                 </button>
                 <button
                   onClick={() => setRegressionOpen(true)}
@@ -228,7 +234,7 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Play className="h-3.5 w-3.5 mr-2 text-amber-600" />
-                  Doğrusal Regresyon...
+                  {t('menu.regression')}
                 </button>
               </div>
             )}
@@ -240,7 +246,7 @@ export const AppHeader: React.FC = () => {
               onClick={() => handleMenuClick('view')}
               className={`px-2 py-1 rounded hover:bg-slate-300 ${activeMenu === 'view' ? 'bg-slate-300 font-semibold' : ''}`}
             >
-              Görünüm
+              {t('menu.view')}
             </button>
             {activeMenu === 'view' && (
               <div
@@ -252,21 +258,21 @@ export const AppHeader: React.FC = () => {
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center"
                 >
                   <Table className="h-3.5 w-3.5 mr-2 text-slate-500" />
-                  Veri Görünümü
+                  {t('menu.dataView')}
                 </button>
                 <button
                   onClick={() => setActiveTab('variable')}
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center"
                 >
                   <Table className="h-3.5 w-3.5 mr-2 text-slate-500" />
-                  Değişken Görünümü
+                  {t('menu.variableView')}
                 </button>
                 <button
                   onClick={() => setActiveTab('output')}
                   className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center"
                 >
                   <BarChart2 className="h-3.5 w-3.5 mr-2 text-slate-500" />
-                  Çıktı Görüntüleyici
+                  {t('menu.outputViewer')}
                 </button>
               </div>
             )}
@@ -278,16 +284,16 @@ export const AppHeader: React.FC = () => {
               onClick={() => handleMenuClick('help')}
               className={`px-2 py-1 rounded hover:bg-slate-300 ${activeMenu === 'help' ? 'bg-slate-300 font-semibold' : ''}`}
             >
-              Yardım
+              {t('menu.help')}
             </button>
             {activeMenu === 'help' && (
               <div
-                className="absolute left-0 mt-1 w-56 bg-white border border-slate-300 shadow-lg rounded-sm py-1 z-50 text-xs"
+                className="absolute left-0 mt-1 w-64 bg-white border border-slate-300 shadow-lg rounded-sm py-1 z-50 text-xs"
                 onClick={closeMenu}
               >
                 <div className="px-3 py-2 text-slate-600">
-                  <p className="font-semibold text-slate-900">StatWeb v0.2.0</p>
-                  <p className="mt-1 text-[11px]">SPSS tarzı web istatistiksel hesaplama platformu. SciPy, statsmodels ve WeasyPrint raporlama desteği içerir.</p>
+                  <p className="font-semibold text-slate-900">{t('menu.aboutTitle')}</p>
+                  <p className="mt-1 text-[11px]">{t('menu.aboutText')}</p>
                 </div>
               </div>
             )}
@@ -304,7 +310,7 @@ export const AppHeader: React.FC = () => {
           className="h-7 text-xs bg-white shadow-none"
         >
           <Upload className="h-3.5 w-3.5 mr-1.5 text-blue-600" />
-          Veri İçe Aktar
+          {t('menu.importData').replace('...', '')}
         </Button>
 
         <div className="h-4 w-px bg-slate-300 mx-1" />
@@ -317,7 +323,7 @@ export const AppHeader: React.FC = () => {
           className="h-7 text-xs bg-white shadow-none"
         >
           <Calculator className="h-3.5 w-3.5 mr-1 text-blue-600" />
-          Değişken Hesapla
+          {t('menu.computeVariable').replace('...', '')}
         </Button>
 
         <Button
@@ -328,7 +334,7 @@ export const AppHeader: React.FC = () => {
           className="h-7 text-xs bg-white shadow-none"
         >
           <Shuffle className="h-3.5 w-3.5 mr-1 text-indigo-600" />
-          Yeniden Kodla
+          {t('menu.recodeVariable').replace('...', '')}
         </Button>
 
         <div className="h-4 w-px bg-slate-300 mx-1" />
@@ -341,7 +347,7 @@ export const AppHeader: React.FC = () => {
           className="h-7 text-xs bg-blue-700 hover:bg-blue-800 text-white"
         >
           <Play className="h-3.5 w-3.5 mr-1.5 fill-current" />
-          Betimsel İstatistikler
+          {t('menu.descriptiveStats')}
         </Button>
 
         <Button
@@ -352,7 +358,7 @@ export const AppHeader: React.FC = () => {
           className="h-7 text-xs bg-white shadow-none"
         >
           <Play className="h-3.5 w-3.5 mr-1.5 text-indigo-600" />
-          Frekanslar
+          {t('menu.frequencies').replace('...', '')}
         </Button>
 
         <Button
@@ -363,7 +369,7 @@ export const AppHeader: React.FC = () => {
           className="h-7 text-xs bg-white shadow-none"
         >
           <Play className="h-3.5 w-3.5 mr-1.5 text-purple-600" />
-          Çapraz Tablo
+          {t('menu.crosstabs').replace('...', '')}
         </Button>
 
         <div className="h-4 w-px bg-slate-300 mx-1" />
@@ -375,7 +381,7 @@ export const AppHeader: React.FC = () => {
           className="h-7 text-xs bg-white shadow-none"
         >
           <BarChart2 className="h-3.5 w-3.5 mr-1.5 text-purple-600" />
-          Çıktı Görüntüleyici
+          {t('menu.outputViewer')}
         </Button>
       </div>
     </header>

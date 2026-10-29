@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/use-ui-store';
 import { useDataset, useDatasetData } from '@/hooks/use-datasets';
 import { useVariables } from '@/hooks/use-variables';
@@ -23,6 +24,7 @@ import { FileSpreadsheet, Upload, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const DatasetWorkspace: React.FC = () => {
+  const { t } = useTranslation();
   const {
     activeDatasetId,
     activeTab,
@@ -60,9 +62,9 @@ export const DatasetWorkspace: React.FC = () => {
         <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 mb-4 shadow-inner">
           <FileSpreadsheet className="h-8 w-8" />
         </div>
-        <h2 className="text-lg font-bold text-slate-800">Açık Veri Seti Yok</h2>
+        <h2 className="text-lg font-bold text-slate-800">{t('spreadsheet.noDatasetTitle')}</h2>
         <p className="text-xs text-slate-500 max-w-md mt-1 mb-6">
-          StatWeb, SPSS tarzı akademik bir istatistiksel analiz ortamı sunar. Mevcut bir veri setini içe aktarın (CSV, Excel veya SPSS .sav) ya da yeni bir proje çalışma alanı oluşturun.
+          {t('spreadsheet.noDatasetDesc')}
         </p>
 
         <div className="flex items-center space-x-3">
@@ -73,7 +75,7 @@ export const DatasetWorkspace: React.FC = () => {
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Upload className="h-3.5 w-3.5 mr-1.5" />
-            Veri Seti İçe Aktar
+            {t('sidebar.importDataset')}
           </Button>
           <Button
             variant="outline"
@@ -82,7 +84,7 @@ export const DatasetWorkspace: React.FC = () => {
             className="bg-white"
           >
             <Database className="h-3.5 w-3.5 mr-1.5 text-slate-600" />
-            Yeni Proje
+            {t('sidebar.newProject')}
           </Button>
         </div>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ReactGrid, Column, Row, CellChange } from '@silevis/reactgrid';
 import { Variable } from '@/types/variable';
 import { SpreadsheetWrapper } from './SpreadsheetWrapper';
@@ -31,7 +32,16 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
   onExport,
   isLoading,
 }) => {
+  const { t } = useTranslation();
   const { setAddVariableOpen } = useUIStore();
+
+  const getMeasureShort = (level: string) => {
+    switch (level) {
+      case 'nominal': return t('spreadsheet.measures.nominal').slice(0, 3);
+      case 'ordinal': return t('spreadsheet.measures.ordinal').slice(0, 3);
+      default: return t('spreadsheet.measures.scale').slice(0, 3);
+    }
+  };
 
   // ReactGrid sütunları: satır numarası + değişken sütunları
   const columns: Column[] = [
@@ -48,14 +58,10 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
     rowId: 'header',
     cells: [
       { type: 'header', text: '' },
-      ...variables.map((v) => {
-        const measureShort =
-          v.measurement_level === 'nominal' ? 'Nom' : v.measurement_level === 'ordinal' ? 'Sıra' : 'Ölç';
-        return {
-          type: 'header' as const,
-          text: `${v.name} [${measureShort}]`,
-        };
-      }),
+      ...variables.map((v) => ({
+        type: 'header' as const,
+        text: `${v.name} [${getMeasureShort(v.measurement_level)}]`,
+      })),
     ],
   };
 
@@ -91,7 +97,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
     changes.forEach((change) => {
       const caseNumber = Number(change.rowId);
       if (isNaN(caseNumber) || caseNumber < 1) return;
-      const rowIndex = caseNumber - 1; // 0-indexed in dataset
+      const rowIndex = caseNumber - 1;
       const colName = String(change.columnId);
       if (colName === '__row_num') return;
 
@@ -123,7 +129,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
             className="h-7 px-2.5 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
           >
             <Plus className="h-3.5 w-3.5 mr-1 text-blue-600" />
-            Yeni Gözlem Ekle
+            {t('spreadsheet.addRow')}
           </Button>
           <Button
             variant="outline"
@@ -132,7 +138,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
             className="h-7 px-2.5 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
           >
             <Plus className="h-3.5 w-3.5 mr-1 text-indigo-600" />
-            Yeni Değişken Ekle
+            {t('spreadsheet.addVariable')}
           </Button>
         </div>
 
@@ -146,7 +152,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
                 className="h-7 px-2 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
               >
                 <Download className="h-3 w-3 mr-1 text-slate-500" />
-                CSV İndir
+                {t('spreadsheet.exportCsv')}
               </Button>
               <Button
                 variant="outline"
@@ -155,7 +161,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
                 className="h-7 px-2 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
               >
                 <FileSpreadsheet className="h-3 w-3 mr-1 text-emerald-600" />
-                Excel İndir
+                {t('spreadsheet.exportXlsx')}
               </Button>
             </>
           )}
@@ -163,16 +169,16 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
       </div>
 
       <SpreadsheetWrapper
-        title="Veri Görünümü (Gözlemler ve Değişkenler)"
-        countLabel={`Gözlemler: ${totalRows > 0 ? offset + 1 : 0} - ${Math.min(offset + dataRows.length, totalRows)} / ${totalRows}`}
+        title={t('spreadsheet.dataViewTitle')}
+        countLabel={`${t('common.cases')}: ${totalRows > 0 ? offset + 1 : 0} - ${Math.min(offset + dataRows.length, totalRows)} / ${totalRows}`}
       >
         {isLoading ? (
           <div className="flex items-center justify-center h-64 text-sm text-slate-500">
-            Veri gözlemleri yükleniyor...
+            {t('spreadsheet.loadingRows')}
           </div>
         ) : variables.length === 0 ? (
           <div className="flex items-center justify-center h-64 text-sm text-slate-500">
-            Bu veri setinde değişken tanımlanmamış.
+            {t('spreadsheet.emptyVariables')}
           </div>
         ) : (
           <ReactGrid
@@ -189,7 +195,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
       {/* Sayfalama Çubuğu */}
       <div className="flex items-center justify-between px-3 py-2 bg-slate-50 border-t border-slate-200 text-xs">
         <span className="text-slate-600 font-medium">
-          Sayfa {currentPage} / {totalPages} ({totalRows} toplam gözlem)
+          {t('common.page')} {currentPage} / {totalPages} ({totalRows} {t('common.observations')})
         </span>
         <div className="flex items-center space-x-2">
           <Button
@@ -199,7 +205,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
             onClick={() => onOffsetChange(Math.max(0, offset - limit))}
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Önceki
+            {t('common.previous')}
           </Button>
           <Button
             variant="outline"
@@ -207,7 +213,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
             disabled={offset + limit >= totalRows || isLoading}
             onClick={() => onOffsetChange(offset + limit)}
           >
-            Sonraki
+            {t('common.next')}
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>

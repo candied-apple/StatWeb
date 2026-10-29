@@ -16,11 +16,16 @@ def test_pdf_report_generation():
         "variable_names": ["a", "b"],
     }).json()
 
-    # Request PDF
-    pdf_resp = client.get(f"/api/v1/analyses/{run['id']}/pdf")
-    assert pdf_resp.status_code == 200
-    assert pdf_resp.headers["content-type"] == "application/pdf"
-    assert pdf_resp.content.startswith(b"%PDF")
+    # Request PDF in Turkish and English
+    pdf_resp_tr = client.get(f"/api/v1/analyses/{run['id']}/pdf?lang=tr")
+    assert pdf_resp_tr.status_code == 200
+    assert pdf_resp_tr.headers["content-type"] == "application/pdf"
+    assert pdf_resp_tr.content.startswith(b"%PDF")
+
+    pdf_resp_en = client.get(f"/api/v1/analyses/{run['id']}/pdf?lang=en")
+    assert pdf_resp_en.status_code == 200
+    assert pdf_resp_en.headers["content-type"] == "application/pdf"
+    assert pdf_resp_en.content.startswith(b"%PDF")
 
     # Run regression and check PDF
     reg_run = client.post("/api/v1/analyses/regression", json={

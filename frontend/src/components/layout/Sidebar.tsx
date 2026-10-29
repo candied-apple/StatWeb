@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useProjects } from '@/hooks/use-projects';
 import { useUIStore } from '@/stores/use-ui-store';
 import {
@@ -12,7 +13,8 @@ import { Button } from '@/components/ui/button';
 import { useDataset } from '@/hooks/use-datasets';
 
 export const Sidebar: React.FC = () => {
-  const { projects, isLoading } = useProjects();
+  const { t } = useTranslation();
+  const { projects, isLoading, deleteProject } = useProjects();
   const {
     activeProjectId,
     activeDatasetId,
@@ -24,7 +26,6 @@ export const Sidebar: React.FC = () => {
 
   const { deleteDataset } = useDataset(null);
 
-  // İlk projeyi ve veri setini otomatik seç
   React.useEffect(() => {
     if (!activeProjectId && projects.length > 0) {
       setActiveProject(projects[0].id);
@@ -36,9 +37,24 @@ export const Sidebar: React.FC = () => {
 
   const activeProject = projects.find((p) => p.id === activeProjectId);
 
+  const handleDeleteProject = async () => {
+    if (!activeProjectId || !activeProject) return;
+    if (confirm(`${t('sidebar.deleteProject')}: "${activeProject.name}"?`)) {
+      await deleteProject(activeProjectId);
+      const remaining = projects.filter((p) => p.id !== activeProjectId);
+      if (remaining.length > 0) {
+        setActiveProject(remaining[0].id);
+        setActiveDataset(remaining[0].datasets?.[0]?.id || null);
+      } else {
+        setActiveProject(null);
+        setActiveDataset(null);
+      }
+    }
+  };
+
   const handleDelete = async (e: React.MouseEvent, datasetId: string) => {
     e.stopPropagation();
-    if (confirm('Bu veri setini silmek istediğinizden emin misiniz?')) {
+    if (confirm(t('common.remove') + '?')) {
       await deleteDataset(datasetId);
       if (activeDatasetId === datasetId) {
         setActiveDataset(null);
@@ -52,7 +68,7 @@ export const Sidebar: React.FC = () => {
       <div className="p-3 border-b border-slate-200 bg-slate-100 flex items-center justify-between">
         <div className="flex items-center space-x-1.5 font-semibold text-slate-800">
           <Database className="h-4 w-4 text-blue-700" />
-          <span>Proje Alanı</span>
+          <span>{t('sidebar.projectArea')}</span>
         </div>
         <Button
           variant="outline"
@@ -61,15 +77,26 @@ export const Sidebar: React.FC = () => {
           className="h-6 px-2 text-[11px] bg-white"
         >
           <Plus className="h-3 w-3 mr-1" />
-          Yeni
+          {t('common.add')}
         </Button>
       </div>
 
       {/* Proje Seçici */}
       <div className="px-3 py-2 border-b border-slate-200">
-        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-          Aktif Proje
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+            {t('sidebar.activeProject')}
+          </label>
+          {activeProjectId && (
+            <button
+              onClick={handleDeleteProject}
+              className="text-slate-400 hover:text-red-600 transition-colors p-0.5"
+              title={t('sidebar.deleteProject')}
+            >
+              <Trash2 className="h-3 w-3" />
+            </button>
+          )}
+        </div>
         <select
           value={activeProjectId || ''}
           onChange={(e) => {
@@ -88,7 +115,7 @@ export const Sidebar: React.FC = () => {
               {p.name}
             </option>
           ))}
-          {projects.length === 0 && <option value="">Proje yok</option>}
+          {projects.length === 0 && <option value="">{t('sidebar.noProject')}</option>}
         </select>
       </div>
 
@@ -96,31 +123,31 @@ export const Sidebar: React.FC = () => {
       <div className="flex-1 overflow-y-auto p-2">
         <div className="flex items-center justify-between px-2 py-1 mb-1">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            Veri Setleri
+            {t('sidebar.datasets')}
           </span>
           <button
             onClick={() => setUploadOpen(true)}
             className="text-blue-600 hover:text-blue-800 text-[11px] font-medium flex items-center"
           >
             <Plus className="h-3 w-3 mr-0.5" />
-            İçe Aktar
+            {t('common.add')}
           </button>
         </div>
 
         {isLoading ? (
-          <div className="p-4 text-center text-slate-400 text-xs">Yükleniyor...</div>
+          <div className="p-4 text-center text-slate-400 text-xs">{t('common.loading')}</div>
         ) : !activeProject || !activeProject.datasets || activeProject.datasets.length === 0 ? (
           <div className="p-4 text-center bg-white rounded border border-dashed border-slate-300 text-slate-500 my-2">
             <FileSpreadsheet className="h-6 w-6 mx-auto mb-1 text-slate-400" />
-            <p className="font-medium text-[11px]">Henüz veri seti yok</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">CSV, SAV veya XLSX yükleyin</p>
+            <p className="font-medium text-[11px]">{t('sidebar.noDatasets')}</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">CSV, SAV, XLSX</p>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setUploadOpen(true)}
               className="mt-2 text-[11px] h-6 px-2"
             >
-              Veri İçe Aktar
+              {t('sidebar.importDataset')}
             </Button>
           </div>
         ) : (
@@ -148,7 +175,7 @@ export const Sidebar: React.FC = () => {
                           isActive ? 'text-blue-100' : 'text-slate-400'
                         }`}
                       >
-                        {dataset.row_count} gözlem × {dataset.column_count} değişken
+                        {dataset.row_count} {t('common.observations')} × {dataset.column_count} {t('common.variables').toLowerCase()}
                       </div>
                     </div>
                   </div>
@@ -161,7 +188,7 @@ export const Sidebar: React.FC = () => {
                           ? 'hover:bg-blue-700 text-blue-200'
                           : 'hover:bg-slate-300 text-slate-400 hover:text-red-600'
                       }`}
-                      title="Veri setini sil"
+                      title={t('common.remove')}
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>
