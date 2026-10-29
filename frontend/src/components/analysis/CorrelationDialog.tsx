@@ -66,7 +66,7 @@ export const CorrelationDialog: React.FC<CorrelationDialogProps> = ({
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedList.length < 2) {
-      setErrorMsg('Please select at least 2 variables to compute bivariate correlations.');
+      setErrorMsg('İki değişkenli korelasyonu hesaplamak için lütfen en az 2 değişken seçin.');
       return;
     }
     setLoading(true);
@@ -79,7 +79,7 @@ export const CorrelationDialog: React.FC<CorrelationDialogProps> = ({
       setCorrelationOpen(false);
       setActiveAnalysis(result.id);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to compute correlation matrix.');
+      setErrorMsg(err.message || 'Korelasyon matrisi hesaplanamadı.');
     } finally {
       setLoading(false);
     }
@@ -89,9 +89,9 @@ export const CorrelationDialog: React.FC<CorrelationDialogProps> = ({
     <Dialog open={isCorrelationOpen} onOpenChange={setCorrelationOpen}>
       <DialogContent className="max-w-xl" onClose={() => setCorrelationOpen(false)}>
         <DialogHeader>
-          <DialogTitle>Bivariate Correlations</DialogTitle>
+          <DialogTitle>İki Değişkenli Korelasyonlar</DialogTitle>
           <DialogDescription>
-            Compute Pearson and Spearman rank correlation coefficients with two-tailed significance tests.
+            İki yönlü anlamlılık testleri ile Pearson ve Spearman sıra korelasyon katsayılarını hesaplayın.
           </DialogDescription>
         </DialogHeader>
 
@@ -105,7 +105,7 @@ export const CorrelationDialog: React.FC<CorrelationDialogProps> = ({
           <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center my-3 text-xs">
             <div className="flex flex-col h-60 border border-slate-300 rounded bg-slate-50">
               <div className="px-2 py-1 bg-slate-100 font-semibold border-b border-slate-200 text-slate-700">
-                Variables:
+                Değişkenler:
               </div>
               <div className="flex-1 overflow-y-auto p-1 bg-white">
                 {availableList.map((vName) => (
@@ -134,7 +134,7 @@ export const CorrelationDialog: React.FC<CorrelationDialogProps> = ({
 
             <div className="flex flex-col h-60 border border-slate-300 rounded bg-slate-50">
               <div className="px-2 py-1 bg-slate-100 font-semibold border-b border-slate-200 text-slate-700">
-                Selected Variables:
+                Seçilen Değişkenler:
               </div>
               <div className="flex-1 overflow-y-auto p-1 bg-white">
                 {selectedList.map((vName) => (
@@ -155,10 +155,10 @@ export const CorrelationDialog: React.FC<CorrelationDialogProps> = ({
 
           <DialogFooter>
             <Button type="button" variant="outline" size="sm" onClick={() => setCorrelationOpen(false)}>
-              Cancel
+              İptal
             </Button>
             <Button type="submit" size="sm" disabled={selectedList.length < 2 || loading} className="bg-blue-600 hover:bg-blue-700 text-white">
-              {loading ? 'Computing...' : 'Run Correlations (OK)'}
+              {loading ? 'Hesaplanıyor...' : 'Korelasyonları Hesapla (Tamam)'}
             </Button>
           </DialogFooter>
         </form>

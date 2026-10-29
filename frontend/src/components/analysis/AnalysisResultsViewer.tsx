@@ -22,9 +22,9 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
     return (
       <div className="flex flex-col items-center justify-center h-full text-slate-400 p-8">
         <BarChart2 className="h-12 w-12 text-slate-300 mb-2" />
-        <h3 className="font-semibold text-slate-600 text-sm">No Analysis Run Selected</h3>
+        <h3 className="font-semibold text-slate-600 text-sm">Seçili Analiz Çıktısı Yok</h3>
         <p className="text-xs text-slate-400 mt-1">
-          Run an analysis from the Analyze menu to inspect output tables and statistical charts.
+          Çıktı tablolarını ve istatistiksel grafikleri görüntülemek için Çözümle menüsünden bir analiz çalıştırın.
         </p>
       </div>
     );
@@ -38,7 +38,7 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-slate-50 p-6 select-text text-xs space-y-6">
-      {/* Header */}
+      {/* Üst Bilgi Kartı */}
       <div className="bg-white border border-slate-200 rounded p-4 shadow-sm flex items-center justify-between">
         <div>
           <div className="flex items-center space-x-2">
@@ -48,11 +48,11 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
           <div className="flex items-center space-x-3 text-slate-500 text-[11px] mt-1">
             <span className="flex items-center">
               <Calendar className="h-3.5 w-3.5 mr-1" />
-              {new Date(created_at).toLocaleString()}
+              {new Date(created_at).toLocaleString('tr-TR')}
             </span>
             <span className="flex items-center">
               <Hash className="h-3.5 w-3.5 mr-1" />
-              {results?.total_observations || results?.n_valid || '-'} Observations
+              {results?.total_observations || results?.n_valid || '-'} Gözlem
             </span>
           </div>
         </div>
@@ -64,32 +64,32 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
           className="bg-white border-slate-300 text-slate-700 hover:bg-slate-50"
         >
           <Download className="h-3.5 w-3.5 mr-1.5 text-blue-600" />
-          Export PDF Report
+          Raporu PDF Olarak İndir
         </Button>
       </div>
 
-      {/* 1. DESCRIPTIVE STATISTICS */}
+      {/* 1. BETİMSEL İSTATİSTİKLER */}
       {analysis_type === 'descriptives' && (
         <div className="bg-white border border-slate-200 rounded p-4 shadow-sm">
           <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2 flex items-center">
             <Table className="h-3.5 w-3.5 mr-1 text-slate-500" />
-            Descriptive Statistics Summary
+            Betimsel İstatistikler Özeti
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
-                  <th className="py-2 px-3 border-r border-slate-300">Variable</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">N (Valid)</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Missing</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Mean</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Error</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Dev</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Variance</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Median</th>
+                  <th className="py-2 px-3 border-r border-slate-300">Değişken</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Geçerli N</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Kayıp</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Ortalama</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Hata</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Sapma</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Varyans</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Medyan</th>
                   <th className="py-2 px-3 border-r border-slate-300 text-right">Min</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Max</th>
-                  <th className="py-2 px-3 text-right">IQR</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Maks</th>
+                  <th className="py-2 px-3 text-right">Çeyrekler Açıklığı (IQR)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -117,15 +117,15 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
               x: (results?.variables || []).map((v: any) => v.variable_name),
               y: (results?.variables || []).map((v: any) => v.mean ?? 0),
               type: 'bar',
-              name: 'Mean',
+              name: 'Ortalama',
               marker: { color: '#3b82f6' },
             }]}
-            title="Variable Means"
+            title="Değişken Ortalamaları Grafiği"
           />
         </div>
       )}
 
-      {/* 2. FREQUENCIES */}
+      {/* 2. FREKANSLAR */}
       {analysis_type === 'frequencies' && (
         <div className="space-y-6">
           {(results?.variables || []).map((v: any) => {
@@ -133,17 +133,17 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
             return (
               <div key={v.variable_name} className="bg-white border border-slate-200 rounded p-4 shadow-sm">
                 <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">
-                  Frequency Table: {v.variable_name} (N = {v.total})
+                  Frekans Tablosu: {v.variable_name} (Toplam N = {v.total})
                 </h3>
                 <div className="overflow-x-auto mb-4">
                   <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
                     <thead>
                       <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
-                        <th className="py-2 px-3 border-r border-slate-300">Value / Label</th>
-                        <th className="py-2 px-3 border-r border-slate-300 text-right">Frequency</th>
-                        <th className="py-2 px-3 border-r border-slate-300 text-right">Percent</th>
-                        <th className="py-2 px-3 border-r border-slate-300 text-right">Valid Percent</th>
-                        <th className="py-2 px-3 text-right">Cumulative Percent</th>
+                        <th className="py-2 px-3 border-r border-slate-300">Değer / Etiket</th>
+                        <th className="py-2 px-3 border-r border-slate-300 text-right">Frekans</th>
+                        <th className="py-2 px-3 border-r border-slate-300 text-right">Yüzde</th>
+                        <th className="py-2 px-3 border-r border-slate-300 text-right">Geçerli Yüzde</th>
+                        <th className="py-2 px-3 text-right">Kümülatif Yüzde</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200">
@@ -151,9 +151,9 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
                         <tr key={cIdx} className={cat.is_missing ? 'bg-amber-50/40 text-slate-500' : 'hover:bg-blue-50/50'}>
                           <td className="py-2 px-3 border-r border-slate-200 font-medium">{cat.label}</td>
                           <td className="py-2 px-3 text-right border-r border-slate-200">{cat.frequency}</td>
-                          <td className="py-2 px-3 text-right border-r border-slate-200">{cat.percent.toFixed(1)}%</td>
-                          <td className="py-2 px-3 text-right border-r border-slate-200">{cat.valid_percent !== null ? `${cat.valid_percent.toFixed(1)}%` : '-'}</td>
-                          <td className="py-2 px-3 text-right">{cat.cumulative_percent !== null ? `${cat.cumulative_percent.toFixed(1)}%` : '-'}</td>
+                          <td className="py-2 px-3 text-right border-r border-slate-200">%{cat.percent.toFixed(1)}</td>
+                          <td className="py-2 px-3 text-right border-r border-slate-200">{cat.valid_percent !== null ? `%${cat.valid_percent.toFixed(1)}` : '-'}</td>
+                          <td className="py-2 px-3 text-right">{cat.cumulative_percent !== null ? `%${cat.cumulative_percent.toFixed(1)}` : '-'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -168,7 +168,7 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
                       type: 'bar',
                       marker: { color: '#6366f1' },
                     }]}
-                    title={`Frequency Bar Chart: ${v.variable_name}`}
+                    title={`Frekans Çubuk Grafiği: ${v.variable_name}`}
                   />
                 )}
               </div>
@@ -177,12 +177,12 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
         </div>
       )}
 
-      {/* 3. CROSSTABS */}
+      {/* 3. ÇAPRAZ TABLOLAR */}
       {analysis_type === 'crosstabs' && (
         <div className="bg-white border border-slate-200 rounded p-4 shadow-sm space-y-6">
           <div>
             <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">
-              Contingency Table: {results?.row_var_name} × {results?.col_var_name} (N = {results?.n_valid})
+              Çapraz Tablo: {results?.row_var_name} × {results?.col_var_name} (N = {results?.n_valid})
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
@@ -192,7 +192,7 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
                     {(results?.col_categories || []).map((col: any) => (
                       <th key={String(col.value)} className="py-2 px-3 border-r border-slate-300 text-right">{col.label}</th>
                     ))}
-                    <th className="py-2 px-3 text-right">Total</th>
+                    <th className="py-2 px-3 text-right">Toplam</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -208,7 +208,7 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
                             <td key={String(col.value)} className="py-2 px-3 text-right border-r border-slate-200">
                               <span className="font-medium text-slate-900">{cell?.count || 0}</span>
                               <div className="text-[10px] text-slate-400">
-                                {cell?.row_percent?.toFixed(1)}% row
+                                %{cell?.row_percent?.toFixed(1)} satır
                               </div>
                             </td>
                           );
@@ -224,21 +224,21 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
 
           <div>
             <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">
-              Chi-Square Tests
+              Ki-Kare Testleri
             </h3>
             <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
                   <th className="py-2 px-3 border-r border-slate-300">Test</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Value</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">df</th>
-                  <th className="py-2 px-3 text-right">Asymptotic Significance (2-sided)</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Değer</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">sd</th>
+                  <th className="py-2 px-3 text-right">Asimptotik Anlamlılık (2-yönlü)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {(results?.chi_square_tests || []).map((t: any) => (
                   <tr key={t.test_name}>
-                    <td className="py-2 px-3 border-r border-slate-200 font-medium">{t.test_name}</td>
+                    <td className="py-2 px-3 border-r border-slate-200 font-medium">{t.test_name === 'Pearson Chi-Square' ? 'Pearson Ki-Kare' : t.test_name}</td>
                     <td className="py-2 px-3 text-right border-r border-slate-200 font-mono">{t.value.toFixed(3)}</td>
                     <td className="py-2 px-3 text-right border-r border-slate-200">{t.df}</td>
                     <td className="py-2 px-3 text-right font-medium text-blue-700">{t.p_value < 0.001 ? '< .001' : t.p_value.toFixed(4)}</td>
@@ -250,12 +250,12 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
 
           {(results?.effect_sizes || []).length > 0 && (
             <div>
-              <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Symmetric Measures (Effect Size)</h3>
+              <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Simetrik Ölçüler (Etki Büyüklüğü)</h3>
               <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
                 <thead>
                   <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
-                    <th className="py-2 px-3 border-r border-slate-300">Measure</th>
-                    <th className="py-2 px-3 text-right">Value</th>
+                    <th className="py-2 px-3 border-r border-slate-300">Ölçü</th>
+                    <th className="py-2 px-3 text-right">Değer</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200">
@@ -272,19 +272,19 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
         </div>
       )}
 
-      {/* 4. INDEPENDENT T-TEST */}
+      {/* 4. BAĞIMSIZ T-TESTİ */}
       {analysis_type === 'ttest_ind' && (
         <div className="bg-white border border-slate-200 rounded p-4 shadow-sm space-y-6">
           <div>
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Group Statistics</h3>
+            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Grup İstatistikleri</h3>
             <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
-                  <th className="py-2 px-3 border-r border-slate-300">Group</th>
+                  <th className="py-2 px-3 border-r border-slate-300">Grup</th>
                   <th className="py-2 px-3 border-r border-slate-300 text-right">N</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Mean</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Deviation</th>
-                  <th className="py-2 px-3 text-right">Std. Error Mean</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Ortalama</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Standart Sapma</th>
+                  <th className="py-2 px-3 text-right">Standart Hata</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -303,24 +303,26 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
 
           <div>
             <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">
-              Independent Samples Test (Levene's Test: F={results?.levene_f?.toFixed(3) || '-'}, Sig.={results?.levene_p?.toFixed(4) || '-'})
+              Bağımsız Örneklemler Testi (Levene Homojenlik Testi: F={results?.levene_f?.toFixed(3) || '-'}, Sig.={results?.levene_p?.toFixed(4) || '-'})
             </h3>
             <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
-                  <th className="py-2 px-3 border-r border-slate-300">Assumption</th>
+                  <th className="py-2 px-3 border-r border-slate-300">Varsayım</th>
                   <th className="py-2 px-3 border-r border-slate-300 text-right">t</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">df</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Sig. (2-tailed)</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Mean Diff</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Error Diff</th>
-                  <th className="py-2 px-3 text-right">95% Confidence Interval</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">sd</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Sig. (2-yönlü)</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Ortalama Fark</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Hata Fark</th>
+                  <th className="py-2 px-3 text-right">%95 Güven Aralığı</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {(results?.tests || []).map((t: any) => (
                   <tr key={t.variance_assumption}>
-                    <td className="py-2 px-3 border-r border-slate-200 font-medium">{t.variance_assumption}</td>
+                    <td className="py-2 px-3 border-r border-slate-200 font-medium">
+                      {t.variance_assumption === 'Equal variances assumed' ? 'Eşit varyanslar varsayıldı' : 'Eşit varyanslar varsayılmadı'}
+                    </td>
                     <td className="py-2 px-3 text-right border-r border-slate-200 font-mono">{t.t_stat.toFixed(3)}</td>
                     <td className="py-2 px-3 text-right border-r border-slate-200">{t.df.toFixed(2)}</td>
                     <td className="py-2 px-3 text-right border-r border-slate-200 font-medium text-blue-700">{t.p_value < 0.001 ? '< .001' : t.p_value.toFixed(4)}</td>
@@ -335,19 +337,19 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
         </div>
       )}
 
-      {/* 5. ONE-WAY ANOVA */}
+      {/* 5. TEK YÖNLÜ ANOVA */}
       {analysis_type === 'anova' && (
         <div className="bg-white border border-slate-200 rounded p-4 shadow-sm space-y-6">
           <div>
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Descriptives</h3>
+            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Grup Betimsel İstatistikleri</h3>
             <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
-                  <th className="py-2 px-3 border-r border-slate-300">Factor Group</th>
+                  <th className="py-2 px-3 border-r border-slate-300">Faktör Grubu</th>
                   <th className="py-2 px-3 border-r border-slate-300 text-right">N</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Mean</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Deviation</th>
-                  <th className="py-2 px-3 text-right">95% CI</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Ortalama</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Standart Sapma</th>
+                  <th className="py-2 px-3 text-right">%95 Güven Aralığı</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -365,44 +367,50 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
           </div>
 
           <div>
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">ANOVA Table</h3>
+            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">ANOVA Tablosu</h3>
             <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
-                  <th className="py-2 px-3 border-r border-slate-300">Source of Variation</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Sum of Squares</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">df</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Mean Square</th>
+                  <th className="py-2 px-3 border-r border-slate-300">Varyans Kaynağı</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Kareler Toplamı</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">sd</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Kareler Ortalaması</th>
                   <th className="py-2 px-3 border-r border-slate-300 text-right">F</th>
                   <th className="py-2 px-3 text-right">Sig.</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {(results?.anova_table || []).map((r: any) => (
-                  <tr key={r.source}>
-                    <td className="py-2 px-3 border-r border-slate-200 font-semibold">{r.source}</td>
-                    <td className="py-2 px-3 text-right border-r border-slate-200 font-mono">{r.sum_of_squares.toFixed(3)}</td>
-                    <td className="py-2 px-3 text-right border-r border-slate-200">{r.df}</td>
-                    <td className="py-2 px-3 text-right border-r border-slate-200 font-mono">{r.mean_square !== null ? r.mean_square.toFixed(3) : ''}</td>
-                    <td className="py-2 px-3 text-right border-r border-slate-200 font-bold font-mono">{r.f_statistic !== null ? r.f_statistic.toFixed(3) : ''}</td>
-                    <td className="py-2 px-3 text-right font-bold text-blue-700">{r.p_value !== null ? (r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(4)) : ''}</td>
-                  </tr>
-                ))}
+                {(results?.anova_table || []).map((r: any) => {
+                  let sourceTr = r.source;
+                  if (r.source === 'Between Groups') sourceTr = 'Gruplar Arası';
+                  else if (r.source === 'Within Groups') sourceTr = 'Grup İçi';
+                  else if (r.source === 'Total') sourceTr = 'Toplam';
+                  return (
+                    <tr key={r.source}>
+                      <td className="py-2 px-3 border-r border-slate-200 font-semibold">{sourceTr}</td>
+                      <td className="py-2 px-3 text-right border-r border-slate-200 font-mono">{r.sum_of_squares.toFixed(3)}</td>
+                      <td className="py-2 px-3 text-right border-r border-slate-200">{r.df}</td>
+                      <td className="py-2 px-3 text-right border-r border-slate-200 font-mono">{r.mean_square !== null ? r.mean_square.toFixed(3) : ''}</td>
+                      <td className="py-2 px-3 text-right border-r border-slate-200 font-bold font-mono">{r.f_statistic !== null ? r.f_statistic.toFixed(3) : ''}</td>
+                      <td className="py-2 px-3 text-right font-bold text-blue-700">{r.p_value !== null ? (r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(4)) : ''}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {/* 6. CORRELATIONS */}
+      {/* 6. KORELASYONLAR */}
       {analysis_type === 'correlation' && (
         <div className="bg-white border border-slate-200 rounded p-4 shadow-sm">
-          <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Bivariate Correlation Matrix</h3>
+          <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">İki Değişkenli Korelasyon Matrisi (Pearson)</h3>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
-                  <th className="py-2 px-3 border-r border-slate-300">Variables</th>
+                  <th className="py-2 px-3 border-r border-slate-300">Değişkenler</th>
                   {(results?.variables || []).map((v: string) => (
                     <th key={v} className="py-2 px-3 border-r border-slate-300 text-center">{v}</th>
                   ))}
@@ -434,18 +442,18 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
         </div>
       )}
 
-      {/* 7. LINEAR REGRESSION */}
+      {/* 7. DOĞRUSAL REGRESYON */}
       {analysis_type === 'regression' && (
         <div className="bg-white border border-slate-200 rounded p-4 shadow-sm space-y-6">
           <div>
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Model Summary</h3>
+            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Model Özeti</h3>
             <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
                   <th className="py-2 px-3 border-r border-slate-300 text-right">R</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">R Square</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Adjusted R Square</th>
-                  <th className="py-2 px-3 text-right">Std. Error of the Estimate</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">R Kare</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Düzeltilmiş R Kare</th>
+                  <th className="py-2 px-3 text-right">Tahminin Standart Hatası</th>
                 </tr>
               </thead>
               <tbody>
@@ -460,13 +468,13 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
           </div>
 
           <div>
-            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Coefficients</h3>
+            <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">Katsayılar Tablosu</h3>
             <table className="w-full border-collapse border border-slate-300 text-left bg-white text-xs">
               <thead>
                 <tr className="bg-slate-100 text-slate-700 border-b border-slate-300 font-semibold">
                   <th className="py-2 px-3 border-r border-slate-300">Model</th>
                   <th className="py-2 px-3 border-r border-slate-300 text-right">B</th>
-                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Error</th>
+                  <th className="py-2 px-3 border-r border-slate-300 text-right">Std. Hata</th>
                   <th className="py-2 px-3 border-r border-slate-300 text-right">Beta</th>
                   <th className="py-2 px-3 border-r border-slate-300 text-right">t</th>
                   <th className="py-2 px-3 border-r border-slate-300 text-right">Sig.</th>
@@ -476,7 +484,9 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
               <tbody className="divide-y divide-slate-200">
                 {(results?.coefficients || []).map((c: any) => (
                   <tr key={c.variable_name}>
-                    <td className="py-2 px-3 border-r border-slate-200 font-semibold">{c.variable_name}</td>
+                    <td className="py-2 px-3 border-r border-slate-200 font-semibold">
+                      {c.variable_name === '(Constant)' ? '(Sabit)' : c.variable_name}
+                    </td>
                     <td className="py-2 px-3 text-right border-r border-slate-200 font-mono">{c.unstandardized_b.toFixed(3)}</td>
                     <td className="py-2 px-3 text-right border-r border-slate-200 font-mono">{c.std_error.toFixed(3)}</td>
                     <td className="py-2 px-3 text-right border-r border-slate-200 font-mono">{c.standardized_beta !== null ? c.standardized_beta.toFixed(3) : '-'}</td>
@@ -491,12 +501,12 @@ export const AnalysisResultsViewer: React.FC<AnalysisResultsViewerProps> = ({
         </div>
       )}
 
-      {/* Warnings Panel */}
+      {/* Uyarılar Paneli */}
       {results?.warnings && results.warnings.length > 0 && (
         <div className="p-3 bg-amber-50 border border-amber-200 rounded text-amber-800 text-xs">
           <div className="font-semibold flex items-center mb-1">
             <AlertCircle className="h-4 w-4 mr-1.5 text-amber-600" />
-            Statistical Diagnostics & Warnings:
+            İstatistiksel Tanı ve Uyarılar:
           </div>
           <ul className="list-disc pl-5 space-y-0.5">
             {results.warnings.map((w: string, idx: number) => (

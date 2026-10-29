@@ -39,7 +39,7 @@ export const AnovaDialog: React.FC<AnovaDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!depVar || !factorVar) {
-      setErrorMsg('Please select both a dependent variable and a factor variable.');
+      setErrorMsg('Lütfen hem bağımlı değişkeni hem faktör değişkenini seçin.');
       return;
     }
     setLoading(true);
@@ -53,7 +53,7 @@ export const AnovaDialog: React.FC<AnovaDialogProps> = ({
       setAnovaOpen(false);
       setActiveAnalysis(result.id);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to compute ANOVA.');
+      setErrorMsg(err.message || 'ANOVA testi hesaplanamadı.');
     } finally {
       setLoading(false);
     }
@@ -63,9 +63,9 @@ export const AnovaDialog: React.FC<AnovaDialogProps> = ({
     <Dialog open={isAnovaOpen} onOpenChange={setAnovaOpen}>
       <DialogContent onClose={() => setAnovaOpen(false)}>
         <DialogHeader>
-          <DialogTitle>One-Way ANOVA</DialogTitle>
+          <DialogTitle>Tek Yönlü ANOVA (Varyans Analizi)</DialogTitle>
           <DialogDescription>
-            Test for significant differences between group means with between-groups and within-groups sums of squares.
+            Gruplar arası ve grup içi kareler toplamı ile grup ortalamaları arasındaki anlamlı farklılıkları test edin.
           </DialogDescription>
         </DialogHeader>
 
@@ -77,7 +77,7 @@ export const AnovaDialog: React.FC<AnovaDialogProps> = ({
           )}
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Dependent List (Continuous)</label>
+            <label className="font-semibold text-slate-700 block mb-1">Bağımlı Değişken (Sürekli)</label>
             <select
               value={depVar}
               onChange={(e) => setDepVar(e.target.value)}
@@ -90,7 +90,7 @@ export const AnovaDialog: React.FC<AnovaDialogProps> = ({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Factor (Categorical Groups)</label>
+            <label className="font-semibold text-slate-700 block mb-1">Faktör (Kategorik Gruplar)</label>
             <select
               value={factorVar}
               onChange={(e) => setFactorVar(e.target.value)}
@@ -104,10 +104,10 @@ export const AnovaDialog: React.FC<AnovaDialogProps> = ({
 
           <DialogFooter>
             <Button type="button" variant="outline" size="sm" onClick={() => setAnovaOpen(false)}>
-              Cancel
+              İptal
             </Button>
             <Button type="submit" size="sm" disabled={loading} className="bg-blue-600 hover:bg-blue-700 text-white">
-              {loading ? 'Calculating...' : 'Run ANOVA (OK)'}
+              {loading ? 'Hesaplanıyor...' : 'ANOVA Testini Çalıştır (Tamam)'}
             </Button>
           </DialogFooter>
         </form>

@@ -64,7 +64,7 @@ export const TTestDialog: React.FC<TTestDialogProps> = ({
       setTTestOpen(false);
       setActiveAnalysis(result.id);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to compute t-test.');
+      setErrorMsg(err.message || 'T-testi hesaplanamadı.');
     } finally {
       setLoading(false);
     }
@@ -74,9 +74,9 @@ export const TTestDialog: React.FC<TTestDialogProps> = ({
     <Dialog open={isTTestOpen} onOpenChange={setTTestOpen}>
       <DialogContent onClose={() => setTTestOpen(false)}>
         <DialogHeader>
-          <DialogTitle>Compare Means: Student's & Welch's T-Test</DialogTitle>
+          <DialogTitle>Ortalamaları Karşılaştır: T-Testi</DialogTitle>
           <DialogDescription>
-            Compute two-sample independent t-tests (with Levene's test) or paired differences t-tests.
+            İki örneklemli bağımsız t-testi (Levene homojenlik testi ile) veya eşleştirilmiş örneklem t-testi hesaplayın.
           </DialogDescription>
         </DialogHeader>
 
@@ -89,7 +89,7 @@ export const TTestDialog: React.FC<TTestDialogProps> = ({
               activeTab === 'independent' ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            Independent-Samples T Test
+            Bağımsız Örneklem T-Testi
           </button>
           <button
             type="button"
@@ -98,7 +98,7 @@ export const TTestDialog: React.FC<TTestDialogProps> = ({
               activeTab === 'paired' ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            Paired-Samples T Test
+            Eşleştirilmiş Örneklem T-Testi
           </button>
         </div>
 
@@ -112,7 +112,7 @@ export const TTestDialog: React.FC<TTestDialogProps> = ({
           {activeTab === 'independent' ? (
             <>
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Test Variable (Continuous)</label>
+                <label className="font-semibold text-slate-700 block mb-1">Test Değişkeni (Sürekli)</label>
                 <select
                   value={testVar}
                   onChange={(e) => setTestVar(e.target.value)}
@@ -127,7 +127,7 @@ export const TTestDialog: React.FC<TTestDialogProps> = ({
               </div>
 
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Grouping Variable</label>
+                <label className="font-semibold text-slate-700 block mb-1">Gruplama Değişkeni (Kategorik)</label>
                 <select
                   value={groupVar}
                   onChange={(e) => setGroupVar(e.target.value)}
@@ -143,19 +143,19 @@ export const TTestDialog: React.FC<TTestDialogProps> = ({
 
               <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded">
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">Group 1 Value</label>
-                  <Input value={group1Val} onChange={(e) => setGroup1Val(e.target.value)} placeholder="e.g. 1 or Male" />
+                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">Grup 1 Değeri</label>
+                  <Input value={group1Val} onChange={(e) => setGroup1Val(e.target.value)} placeholder="Örn. 1 veya Erkek" />
                 </div>
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">Group 2 Value</label>
-                  <Input value={group2Val} onChange={(e) => setGroup2Val(e.target.value)} placeholder="e.g. 2 or Female" />
+                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">Grup 2 Değeri</label>
+                  <Input value={group2Val} onChange={(e) => setGroup2Val(e.target.value)} placeholder="Örn. 2 veya Kadın" />
                 </div>
               </div>
             </>
           ) : (
             <>
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Variable 1 (Pre / Baseline)</label>
+                <label className="font-semibold text-slate-700 block mb-1">1. Değişken (Ön-test / Başlangıç)</label>
                 <select
                   value={pair1Var}
                   onChange={(e) => setPair1Var(e.target.value)}
@@ -168,7 +168,7 @@ export const TTestDialog: React.FC<TTestDialogProps> = ({
               </div>
 
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Variable 2 (Post / Follow-up)</label>
+                <label className="font-semibold text-slate-700 block mb-1">2. Değişken (Son-test / İzlem)</label>
                 <select
                   value={pair2Var}
                   onChange={(e) => setPair2Var(e.target.value)}
@@ -184,10 +184,10 @@ export const TTestDialog: React.FC<TTestDialogProps> = ({
 
           <DialogFooter>
             <Button type="button" variant="outline" size="sm" onClick={() => setTTestOpen(false)}>
-              Cancel
+              İptal
             </Button>
             <Button type="submit" size="sm" disabled={loading} className="bg-blue-600 hover:bg-blue-700 text-white">
-              {loading ? 'Computing...' : 'Run T-Test (OK)'}
+              {loading ? 'Hesaplanıyor...' : 'T-Testini Çalıştır (Tamam)'}
             </Button>
           </DialogFooter>
         </form>

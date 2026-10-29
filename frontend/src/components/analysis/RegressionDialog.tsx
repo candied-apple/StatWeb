@@ -71,11 +71,11 @@ export const RegressionDialog: React.FC<RegressionDialogProps> = ({
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!depVar) {
-      setErrorMsg('Please select a dependent variable.');
+      setErrorMsg('Lütfen bir bağımlı değişken seçin.');
       return;
     }
     if (selectedIndeps.length === 0) {
-      setErrorMsg('Please select at least one independent (predictor) variable.');
+      setErrorMsg('Lütfen en az bir bağımsız (yordayıcı) değişken seçin.');
       return;
     }
     setLoading(true);
@@ -89,7 +89,7 @@ export const RegressionDialog: React.FC<RegressionDialogProps> = ({
       setRegressionOpen(false);
       setActiveAnalysis(result.id);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to compute linear regression.');
+      setErrorMsg(err.message || 'Doğrusal regresyon hesaplanamadı.');
     } finally {
       setLoading(false);
     }
@@ -99,9 +99,9 @@ export const RegressionDialog: React.FC<RegressionDialogProps> = ({
     <Dialog open={isRegressionOpen} onOpenChange={setRegressionOpen}>
       <DialogContent className="max-w-xl" onClose={() => setRegressionOpen(false)}>
         <DialogHeader>
-          <DialogTitle>Linear Regression</DialogTitle>
+          <DialogTitle>Doğrusal Regresyon Analizi</DialogTitle>
           <DialogDescription>
-            Fit ordinary least squares (OLS) linear model with Model Summary, ANOVA, and Coefficients diagnostics.
+            En Küçük Kareler (OLS) yöntemiyle Model Özeti, ANOVA ve Katsayı tanılarını hesaplayın.
           </DialogDescription>
         </DialogHeader>
 
@@ -113,7 +113,7 @@ export const RegressionDialog: React.FC<RegressionDialogProps> = ({
           )}
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Dependent Variable (Y)</label>
+            <label className="font-semibold text-slate-700 block mb-1">Bağımlı Değişken (Y)</label>
             <select
               value={depVar}
               onChange={(e) => handleDepChange(e.target.value)}
@@ -126,11 +126,11 @@ export const RegressionDialog: React.FC<RegressionDialogProps> = ({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Independent Variable(s) (X)</label>
+            <label className="font-semibold text-slate-700 block mb-1">Bağımsız Değişken(ler) (X)</label>
             <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
               <div className="flex flex-col h-48 border border-slate-300 rounded bg-slate-50">
                 <div className="px-2 py-1 bg-slate-100 font-semibold border-b border-slate-200 text-slate-700">
-                  Available:
+                  Değişkenler:
                 </div>
                 <div className="flex-1 overflow-y-auto p-1 bg-white">
                   {availableList.map((vName) => (
@@ -159,7 +159,7 @@ export const RegressionDialog: React.FC<RegressionDialogProps> = ({
 
               <div className="flex flex-col h-48 border border-slate-300 rounded bg-slate-50">
                 <div className="px-2 py-1 bg-slate-100 font-semibold border-b border-slate-200 text-slate-700">
-                  Predictors:
+                  Yordayıcılar (Bağımsız):
                 </div>
                 <div className="flex-1 overflow-y-auto p-1 bg-white">
                   {selectedIndeps.map((vName) => (
@@ -181,10 +181,10 @@ export const RegressionDialog: React.FC<RegressionDialogProps> = ({
 
           <DialogFooter>
             <Button type="button" variant="outline" size="sm" onClick={() => setRegressionOpen(false)}>
-              Cancel
+              İptal
             </Button>
             <Button type="submit" size="sm" disabled={selectedIndeps.length === 0 || loading} className="bg-blue-600 hover:bg-blue-700 text-white">
-              {loading ? 'Estimating...' : 'Run Regression (OK)'}
+              {loading ? 'Hesaplanıyor...' : 'Regresyonu Çalıştır (Tamam)'}
             </Button>
           </DialogFooter>
         </form>

@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 const projectSchema = z.object({
-  name: z.string().min(1, 'Project name is required').max(255),
+  name: z.string().min(1, 'Proje adı gereklidir').max(255),
   description: z.string().optional(),
 });
 
@@ -48,7 +48,7 @@ export const NewProjectModal: React.FC = () => {
       reset();
       setErrorMsg(null);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to create project');
+      setErrorMsg(err.message || 'Proje oluşturulamadı');
     }
   };
 
@@ -56,13 +56,13 @@ export const NewProjectModal: React.FC = () => {
     <Dialog open={isNewProjectOpen} onOpenChange={setNewProjectOpen}>
       <DialogContent onClose={() => setNewProjectOpen(false)}>
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
+          <DialogTitle>Yeni Proje Oluştur</DialogTitle>
           <DialogDescription>
-            Organize datasets and statistical analyses within a dedicated project workspace.
+            Veri setlerinizi ve istatistiksel analizlerinizi özel bir proje alanında organize edin.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-xs">
           {errorMsg && (
             <div className="p-2 bg-red-50 border border-red-200 text-red-700 text-xs rounded">
               {errorMsg}
@@ -70,20 +70,20 @@ export const NewProjectModal: React.FC = () => {
           )}
 
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">
-              Project Name *
+            <label className="font-semibold text-slate-700 block mb-1">
+              Proje Adı *
             </label>
-            <Input {...register('name')} placeholder="e.g. Clinical Trial Analysis 2026" />
+            <Input {...register('name')} placeholder="Örn: Klinik Araştırma 2026" />
             {errors.name && (
               <p className="text-[11px] text-red-600 mt-1">{errors.name.message}</p>
             )}
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">
-              Description (Optional)
+            <label className="font-semibold text-slate-700 block mb-1">
+              Açıklama (İsteğe Bağlı)
             </label>
-            <Input {...register('description')} placeholder="e.g. Phase 2 efficacy data" />
+            <Input {...register('description')} placeholder="Örn: Faz 2 etkinlik analiz verileri" />
           </div>
 
           <DialogFooter>
@@ -93,7 +93,7 @@ export const NewProjectModal: React.FC = () => {
               size="sm"
               onClick={() => setNewProjectOpen(false)}
             >
-              Cancel
+              İptal
             </Button>
             <Button
               type="submit"
@@ -101,7 +101,7 @@ export const NewProjectModal: React.FC = () => {
               disabled={isCreating}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {isCreating ? 'Creating...' : 'Create Project'}
+              {isCreating ? 'Oluşturuluyor...' : 'Proje Oluştur'}
             </Button>
           </DialogFooter>
         </form>

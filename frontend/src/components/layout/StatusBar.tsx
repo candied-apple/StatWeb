@@ -11,14 +11,14 @@ export const StatusBar: React.FC<StatusBarProps> = ({ dataset }) => {
   const { activeTab, setActiveTab } = useUIStore();
 
   const tabs: { id: WorkspaceTab; label: string; icon: React.ReactNode }[] = [
-    { id: 'data', label: 'Data View', icon: <Table className="h-3.5 w-3.5 mr-1.5" /> },
-    { id: 'variable', label: 'Variable View', icon: <ListFilter className="h-3.5 w-3.5 mr-1.5" /> },
-    { id: 'output', label: 'Output Viewer', icon: <BarChart2 className="h-3.5 w-3.5 mr-1.5" /> },
+    { id: 'data', label: 'Veri Görünümü', icon: <Table className="h-3.5 w-3.5 mr-1.5" /> },
+    { id: 'variable', label: 'Değişken Görünümü', icon: <ListFilter className="h-3.5 w-3.5 mr-1.5" /> },
+    { id: 'output', label: 'Çıktı Görüntüleyici', icon: <BarChart2 className="h-3.5 w-3.5 mr-1.5" /> },
   ];
 
   return (
     <footer className="h-8 bg-slate-200 border-t border-slate-300 flex items-center justify-between px-2 text-xs select-none">
-      {/* View Switcher Tabs */}
+      {/* Görünüm Sekmeleri */}
       <div className="flex items-center space-x-1 h-full pt-0.5">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -39,21 +39,21 @@ export const StatusBar: React.FC<StatusBarProps> = ({ dataset }) => {
         })}
       </div>
 
-      {/* Dataset & Engine Status */}
+      {/* Durum Bilgisi */}
       <div className="flex items-center space-x-4 text-slate-600 text-[11px]">
         {dataset ? (
           <>
             <span>{dataset.original_filename}</span>
             <span>|</span>
-            <span>{dataset.row_count} Cases</span>
+            <span>{dataset.row_count} Gözlem</span>
             <span>|</span>
-            <span>{dataset.column_count} Variables</span>
+            <span>{dataset.column_count} Değişken</span>
             <span>|</span>
           </>
         ) : null}
         <span className="flex items-center text-emerald-700 font-medium">
           <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block mr-1.5 animate-pulse" />
-          Statistical Engine Ready
+          İstatistik İşlemcisi Hazır
         </span>
       </div>
     </footer>

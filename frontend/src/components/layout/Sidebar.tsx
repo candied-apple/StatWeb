@@ -24,7 +24,7 @@ export const Sidebar: React.FC = () => {
 
   const { deleteDataset } = useDataset(null);
 
-  // If no active project and projects exist, pick the first
+  // İlk projeyi ve veri setini otomatik seç
   React.useEffect(() => {
     if (!activeProjectId && projects.length > 0) {
       setActiveProject(projects[0].id);
@@ -38,7 +38,7 @@ export const Sidebar: React.FC = () => {
 
   const handleDelete = async (e: React.MouseEvent, datasetId: string) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to delete this dataset?')) {
+    if (confirm('Bu veri setini silmek istediğinizden emin misiniz?')) {
       await deleteDataset(datasetId);
       if (activeDatasetId === datasetId) {
         setActiveDataset(null);
@@ -48,11 +48,11 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside className="w-64 bg-slate-50 border-r border-slate-300 flex flex-col h-full select-none text-xs">
-      {/* Project Selector Header */}
+      {/* Proje Başlığı */}
       <div className="p-3 border-b border-slate-200 bg-slate-100 flex items-center justify-between">
         <div className="flex items-center space-x-1.5 font-semibold text-slate-800">
           <Database className="h-4 w-4 text-blue-700" />
-          <span>Project Workspace</span>
+          <span>Proje Alanı</span>
         </div>
         <Button
           variant="outline"
@@ -61,14 +61,14 @@ export const Sidebar: React.FC = () => {
           className="h-6 px-2 text-[11px] bg-white"
         >
           <Plus className="h-3 w-3 mr-1" />
-          New
+          Yeni
         </Button>
       </div>
 
-      {/* Projects Dropdown / List */}
+      {/* Proje Seçici */}
       <div className="px-3 py-2 border-b border-slate-200">
         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-          Active Project
+          Aktif Proje
         </label>
         <select
           value={activeProjectId || ''}
@@ -88,39 +88,39 @@ export const Sidebar: React.FC = () => {
               {p.name}
             </option>
           ))}
-          {projects.length === 0 && <option value="">No projects</option>}
+          {projects.length === 0 && <option value="">Proje yok</option>}
         </select>
       </div>
 
-      {/* Datasets Section */}
+      {/* Veri Setleri Bölümü */}
       <div className="flex-1 overflow-y-auto p-2">
         <div className="flex items-center justify-between px-2 py-1 mb-1">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-            Datasets
+            Veri Setleri
           </span>
           <button
             onClick={() => setUploadOpen(true)}
             className="text-blue-600 hover:text-blue-800 text-[11px] font-medium flex items-center"
           >
             <Plus className="h-3 w-3 mr-0.5" />
-            Import
+            İçe Aktar
           </button>
         </div>
 
         {isLoading ? (
-          <div className="p-4 text-center text-slate-400 text-xs">Loading projects...</div>
+          <div className="p-4 text-center text-slate-400 text-xs">Yükleniyor...</div>
         ) : !activeProject || !activeProject.datasets || activeProject.datasets.length === 0 ? (
           <div className="p-4 text-center bg-white rounded border border-dashed border-slate-300 text-slate-500 my-2">
             <FileSpreadsheet className="h-6 w-6 mx-auto mb-1 text-slate-400" />
-            <p className="font-medium text-[11px]">No datasets yet</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">Import CSV, SAV, or XLSX</p>
+            <p className="font-medium text-[11px]">Henüz veri seti yok</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">CSV, SAV veya XLSX yükleyin</p>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setUploadOpen(true)}
               className="mt-2 text-[11px] h-6 px-2"
             >
-              Import Data
+              Veri İçe Aktar
             </Button>
           </div>
         ) : (
@@ -148,7 +148,7 @@ export const Sidebar: React.FC = () => {
                           isActive ? 'text-blue-100' : 'text-slate-400'
                         }`}
                       >
-                        {dataset.row_count} rows × {dataset.column_count} vars
+                        {dataset.row_count} gözlem × {dataset.column_count} değişken
                       </div>
                     </div>
                   </div>
@@ -161,7 +161,7 @@ export const Sidebar: React.FC = () => {
                           ? 'hover:bg-blue-700 text-blue-200'
                           : 'hover:bg-slate-300 text-slate-400 hover:text-red-600'
                       }`}
-                      title="Delete dataset"
+                      title="Veri setini sil"
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>

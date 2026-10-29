@@ -80,7 +80,7 @@ class AnalysisService:
         analysis_run = AnalysisRun(
             dataset_id=dataset_id,
             analysis_type="descriptives",
-            name=f"Descriptive Statistics ({', '.join(variable_names[:3])}{'...' if len(variable_names) > 3 else ''})",
+            name=f"Betimsel İstatistikler ({', '.join(variable_names[:3])}{'...' if len(variable_names) > 3 else ''})",
             parameters={"variables": variable_names, "options": options or {}},
             results=_sanitize_for_json(stat_result.to_dict()),
             status="completed",
@@ -114,7 +114,7 @@ class AnalysisService:
         analysis_run = AnalysisRun(
             dataset_id=dataset_id,
             analysis_type="frequencies",
-            name=f"Frequencies ({', '.join(variable_names[:3])}{'...' if len(variable_names) > 3 else ''})",
+            name=f"Frekans Dağılımı ({', '.join(variable_names[:3])}{'...' if len(variable_names) > 3 else ''})",
             parameters={"variables": variable_names},
             results=_sanitize_for_json(stat_result.to_dict()),
             status="completed",
@@ -155,7 +155,7 @@ class AnalysisService:
         analysis_run = AnalysisRun(
             dataset_id=dataset_id,
             analysis_type="crosstabs",
-            name=f"Crosstabs ({row_var} × {col_var})",
+            name=f"Çapraz Tablo ({row_var} × {col_var})",
             parameters={"row_var": row_var, "col_var": col_var},
             results=_sanitize_for_json(stat_result.to_dict()),
             status="completed",
@@ -199,7 +199,7 @@ class AnalysisService:
         analysis_run = AnalysisRun(
             dataset_id=dataset_id,
             analysis_type="ttest_ind",
-            name=f"Independent T-Test ({test_var} by {group_var})",
+            name=f"Bağımsız Örneklem T-Testi ({test_var} / {group_var})",
             parameters={
                 "test_var": test_var,
                 "group_var": group_var,
@@ -243,7 +243,7 @@ class AnalysisService:
         analysis_run = AnalysisRun(
             dataset_id=dataset_id,
             analysis_type="ttest_paired",
-            name=f"Paired T-Test ({pair1_var} - {pair2_var})",
+            name=f"Eşleştirilmiş T-Testi ({pair1_var} - {pair2_var})",
             parameters={"pair1_var": pair1_var, "pair2_var": pair2_var},
             results=_sanitize_for_json(stat_result.to_dict()),
             status="completed",
@@ -283,7 +283,7 @@ class AnalysisService:
         analysis_run = AnalysisRun(
             dataset_id=dataset_id,
             analysis_type="anova",
-            name=f"One-Way ANOVA ({dep_var} by {factor_var})",
+            name=f"Tek Yönlü ANOVA ({dep_var} / {factor_var})",
             parameters={"dep_var": dep_var, "factor_var": factor_var},
             results=_sanitize_for_json(stat_result.to_dict()),
             status="completed",
@@ -315,7 +315,7 @@ class AnalysisService:
         analysis_run = AnalysisRun(
             dataset_id=dataset_id,
             analysis_type="correlation",
-            name=f"Correlations ({', '.join(variable_names[:3])}{'...' if len(variable_names) > 3 else ''})",
+            name=f"Korelasyon Analizi ({', '.join(variable_names[:3])}{'...' if len(variable_names) > 3 else ''})",
             parameters={"variables": variable_names},
             results=_sanitize_for_json(stat_result.to_dict()),
             status="completed",
@@ -350,7 +350,7 @@ class AnalysisService:
         analysis_run = AnalysisRun(
             dataset_id=dataset_id,
             analysis_type="regression",
-            name=f"Linear Regression ({dependent_var} on {', '.join(independent_vars)})",
+            name=f"Doğrusal Regresyon ({dependent_var} ~ {', '.join(independent_vars)})",
             parameters={"dependent_var": dependent_var, "independent_vars": independent_vars},
             results=_sanitize_for_json(stat_result.to_dict()),
             status="completed",

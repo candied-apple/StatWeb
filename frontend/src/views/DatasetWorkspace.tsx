@@ -49,9 +49,9 @@ export const DatasetWorkspace: React.FC = () => {
         <div className="w-16 h-16 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 mb-4 shadow-inner">
           <FileSpreadsheet className="h-8 w-8" />
         </div>
-        <h2 className="text-lg font-bold text-slate-800">No Dataset Open</h2>
+        <h2 className="text-lg font-bold text-slate-800">Açık Veri Seti Yok</h2>
         <p className="text-xs text-slate-500 max-w-md mt-1 mb-6">
-          StatWeb provides an SPSS-style statistical analysis environment. Import an existing dataset (CSV, Excel, or SPSS .sav) or create a new project workspace.
+          StatWeb, SPSS tarzı akademik bir istatistiksel analiz ortamı sunar. Mevcut bir veri setini içe aktarın (CSV, Excel veya SPSS .sav) ya da yeni bir proje çalışma alanı oluşturun.
         </p>
 
         <div className="flex items-center space-x-3">
@@ -62,7 +62,7 @@ export const DatasetWorkspace: React.FC = () => {
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Upload className="h-3.5 w-3.5 mr-1.5" />
-            Import Dataset
+            Veri Seti İçe Aktar
           </Button>
           <Button
             variant="outline"
@@ -71,7 +71,7 @@ export const DatasetWorkspace: React.FC = () => {
             className="bg-white"
           >
             <Database className="h-3.5 w-3.5 mr-1.5 text-slate-600" />
-            New Project
+            Yeni Proje
           </Button>
         </div>
 
@@ -85,7 +85,7 @@ export const DatasetWorkspace: React.FC = () => {
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-white relative">
-      {/* View router */}
+      {/* Görünüm Yönlendirici */}
       {activeTab === 'data' && (
         <DataViewGrid
           variables={variables}
@@ -111,7 +111,7 @@ export const DatasetWorkspace: React.FC = () => {
         <AnalysisResultsViewer analysisRun={analysisRun} />
       )}
 
-      {/* Analysis Modals */}
+      {/* Analiz Modalları */}
       {dataset && (
         <>
           <DescriptivesDialog datasetId={dataset.id} variables={variables} />

@@ -42,7 +42,7 @@ export const UploadDatasetModal: React.FC = () => {
       const file = e.target.files[0];
       const ext = file.name.split('.').pop()?.toLowerCase();
       if (!['csv', 'xlsx', 'sav'].includes(ext || '')) {
-        setErrorMsg('Only CSV (.csv), Excel (.xlsx), and SPSS (.sav) files are supported.');
+        setErrorMsg('Yalnızca CSV (.csv), Excel (.xlsx) ve SPSS (.sav) dosyaları desteklenmektedir.');
         setSelectedFile(null);
         return;
       }
@@ -53,11 +53,11 @@ export const UploadDatasetModal: React.FC = () => {
 
   const onSubmit = async (data: UploadFormData) => {
     if (!selectedFile) {
-      setErrorMsg('Please choose a file to upload.');
+      setErrorMsg('Lütfen yüklenecek bir dosya seçin.');
       return;
     }
     if (!activeProjectId) {
-      setErrorMsg('Please select or create an active project first.');
+      setErrorMsg('Lütfen önce bir proje seçin veya oluşturun.');
       return;
     }
 
@@ -75,7 +75,7 @@ export const UploadDatasetModal: React.FC = () => {
       reset();
       setSelectedFile(null);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to upload dataset.');
+      setErrorMsg(err.message || 'Veri seti yüklenirken hata oluştu.');
     }
   };
 
@@ -83,9 +83,9 @@ export const UploadDatasetModal: React.FC = () => {
     <Dialog open={isUploadOpen} onOpenChange={setUploadOpen}>
       <DialogContent onClose={() => setUploadOpen(false)}>
         <DialogHeader>
-          <DialogTitle>Import Data</DialogTitle>
+          <DialogTitle>Veri İçe Aktar</DialogTitle>
           <DialogDescription>
-            Upload a dataset in CSV, Excel (.xlsx), or SPSS (.sav) format. Full variable metadata and labels will be preserved.
+            CSV, Excel (.xlsx) veya SPSS (.sav) formatında veri seti yükleyin. Değişken adları, etiketleri ve ölçüm düzeyleri otomatik korunur.
           </DialogDescription>
         </DialogHeader>
 
@@ -98,17 +98,17 @@ export const UploadDatasetModal: React.FC = () => {
 
           <div>
             <label className="text-xs font-semibold text-slate-700 block mb-1">
-              Dataset Name (Optional)
+              Veri Seti Adı (İsteğe Bağlı)
             </label>
             <Input
               {...register('name')}
-              placeholder={selectedFile ? selectedFile.name.replace(/\.[^/.]+$/, '') : 'e.g. Employee Survey 2026'}
+              placeholder={selectedFile ? selectedFile.name.replace(/\.[^/.]+$/, '') : 'Örn: Çalışan Memnuniyet Anketi 2026'}
             />
           </div>
 
           <div>
             <label className="text-xs font-semibold text-slate-700 block mb-1">
-              Choose File (.csv, .sav, .xlsx)
+              Dosya Seç (.csv, .sav, .xlsx)
             </label>
             <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors bg-slate-50">
               <input
@@ -124,10 +124,10 @@ export const UploadDatasetModal: React.FC = () => {
               >
                 <UploadCloud className="h-8 w-8 text-blue-600 mb-2" />
                 <span className="text-xs font-medium text-slate-700">
-                  {selectedFile ? selectedFile.name : 'Click to browse files'}
+                  {selectedFile ? selectedFile.name : 'Dosya seçmek için tıklayın'}
                 </span>
                 <span className="text-[11px] text-slate-400 mt-1">
-                  SPSS (.sav), Excel (.xlsx), CSV (.csv) up to 100MB
+                  SPSS (.sav), Excel (.xlsx), CSV (.csv) — Maksimum 100MB
                 </span>
               </label>
             </div>
@@ -140,7 +140,7 @@ export const UploadDatasetModal: React.FC = () => {
               size="sm"
               onClick={() => setUploadOpen(false)}
             >
-              Cancel
+              İptal
             </Button>
             <Button
               type="submit"
@@ -148,7 +148,7 @@ export const UploadDatasetModal: React.FC = () => {
               disabled={!selectedFile || isUploading}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {isUploading ? 'Uploading & Parsing...' : 'Import Dataset'}
+              {isUploading ? 'Yükleniyor ve Ayrıştırılıyor...' : 'Veri Setini İçe Aktar'}
             </Button>
           </DialogFooter>
         </form>

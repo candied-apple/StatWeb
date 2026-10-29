@@ -21,3 +21,13 @@ def test_pdf_report_generation():
     assert pdf_resp.status_code == 200
     assert pdf_resp.headers["content-type"] == "application/pdf"
     assert pdf_resp.content.startswith(b"%PDF")
+
+    # Run regression and check PDF
+    reg_run = client.post("/api/v1/analyses/regression", json={
+        "dataset_id": dataset["id"],
+        "dependent_variable": "b",
+        "independent_variables": ["a"],
+    }).json()
+    reg_pdf = client.get(f"/api/v1/analyses/{reg_run['id']}/pdf")
+    assert reg_pdf.status_code == 200
+    assert reg_pdf.content.startswith(b"%PDF")

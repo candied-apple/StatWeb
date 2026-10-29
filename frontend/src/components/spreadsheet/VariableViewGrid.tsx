@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReactGrid, Column, Row, CellChange } from '@silevis/reactgrid';
-import { Variable, MeasurementLevel, VariableDataType } from '@/types/variable';
+import { Variable } from '@/types/variable';
 import { SpreadsheetWrapper } from './SpreadsheetWrapper';
 
 interface VariableViewGridProps {
@@ -15,37 +15,65 @@ export const VariableViewGrid: React.FC<VariableViewGridProps> = ({
   const columns: Column[] = [
     { columnId: '__index', width: 45, resizable: false },
     { columnId: 'name', width: 120, resizable: true },
-    { columnId: 'type', width: 90, resizable: true },
-    { columnId: 'width', width: 60, resizable: true },
-    { columnId: 'decimals', width: 70, resizable: true },
+    { columnId: 'type', width: 100, resizable: true },
+    { columnId: 'width', width: 70, resizable: true },
+    { columnId: 'decimals', width: 80, resizable: true },
     { columnId: 'label', width: 220, resizable: true },
-    { columnId: 'values', width: 140, resizable: true },
-    { columnId: 'missing', width: 100, resizable: true },
-    { columnId: 'measure', width: 100, resizable: true },
-    { columnId: 'role', width: 80, resizable: true },
+    { columnId: 'values', width: 150, resizable: true },
+    { columnId: 'missing', width: 110, resizable: true },
+    { columnId: 'measure', width: 110, resizable: true },
+    { columnId: 'role', width: 90, resizable: true },
   ];
 
   const headerRow: Row = {
     rowId: 'header',
     cells: [
       { type: 'header', text: '' },
-      { type: 'header', text: 'Name' },
-      { type: 'header', text: 'Type' },
-      { type: 'header', text: 'Width' },
-      { type: 'header', text: 'Decimals' },
-      { type: 'header', text: 'Label' },
-      { type: 'header', text: 'Values' },
-      { type: 'header', text: 'Missing' },
-      { type: 'header', text: 'Measure' },
-      { type: 'header', text: 'Role' },
+      { type: 'header', text: 'Ad' },
+      { type: 'header', text: 'Tür' },
+      { type: 'header', text: 'Genişlik' },
+      { type: 'header', text: 'Basamak' },
+      { type: 'header', text: 'Etiket' },
+      { type: 'header', text: 'Değerler' },
+      { type: 'header', text: 'Kayıp' },
+      { type: 'header', text: 'Ölçüm' },
+      { type: 'header', text: 'Rol' },
     ],
+  };
+
+  const formatDataTypeTr = (dt: string) => {
+    switch (dt) {
+      case 'numeric': return 'Sayısal';
+      case 'string': return 'Metin';
+      case 'date': return 'Tarih';
+      case 'boolean': return 'Mantıksal';
+      default: return dt;
+    }
+  };
+
+  const formatMeasureTr = (m: string) => {
+    switch (m) {
+      case 'scale': return 'Ölçek';
+      case 'nominal': return 'Nominal';
+      case 'ordinal': return 'Sıralı';
+      default: return m;
+    }
+  };
+
+  const formatRoleTr = (r: string) => {
+    switch (r) {
+      case 'input': return 'Girdi';
+      case 'target': return 'Hedef';
+      case 'both': return 'Her İkisi';
+      case 'none': return 'Hiçbiri';
+      default: return r;
+    }
   };
 
   const rows: Row[] = [
     headerRow,
     ...variables.map((v, idx) => {
-      // Format value labels summary (e.g. '{1=Male, 2=Female}')
-      let valuesSummary = 'None';
+      let valuesSummary = 'Yok';
       if (v.value_labels && Object.keys(v.value_labels).length > 0) {
         valuesSummary = Object.entries(v.value_labels)
           .map(([code, lbl]) => `${code}=${lbl}`)
@@ -56,8 +84,7 @@ export const VariableViewGrid: React.FC<VariableViewGridProps> = ({
         }
       }
 
-      // Format missing summary
-      let missingSummary = 'None';
+      let missingSummary = 'Yok';
       if (v.missing_values && v.missing_values.length > 0) {
         missingSummary = v.missing_values.join(', ');
       }
@@ -67,14 +94,14 @@ export const VariableViewGrid: React.FC<VariableViewGridProps> = ({
         cells: [
           { type: 'header' as const, text: String(idx + 1) },
           { type: 'text' as const, text: v.name },
-          { type: 'text' as const, text: v.data_type.toUpperCase() },
+          { type: 'text' as const, text: formatDataTypeTr(v.data_type) },
           { type: 'text' as const, text: String(v.display_width) },
           { type: 'text' as const, text: String(v.decimals) },
           { type: 'text' as const, text: v.label || '' },
           { type: 'text' as const, text: valuesSummary },
           { type: 'text' as const, text: missingSummary },
-          { type: 'text' as const, text: v.measurement_level.toUpperCase() },
-          { type: 'text' as const, text: v.role.toUpperCase() },
+          { type: 'text' as const, text: formatMeasureTr(v.measurement_level) },
+          { type: 'text' as const, text: formatRoleTr(v.role) },
         ],
       };
     }),
@@ -101,14 +128,15 @@ export const VariableViewGrid: React.FC<VariableViewGridProps> = ({
         if (!isNaN(parsed) && parsed > 0) updates.display_width = parsed;
       } else if (columnId === 'measure') {
         const lower = newRawText.toLowerCase();
-        if (['scale', 'nominal', 'ordinal'].includes(lower)) {
-          updates.measurement_level = lower as MeasurementLevel;
-        }
+        if (lower.includes('ölçek') || lower === 'scale') updates.measurement_level = 'scale';
+        else if (lower.includes('nom')) updates.measurement_level = 'nominal';
+        else if (lower.includes('sıra') || lower === 'ordinal') updates.measurement_level = 'ordinal';
       } else if (columnId === 'type') {
         const lower = newRawText.toLowerCase();
-        if (['numeric', 'string', 'date', 'boolean'].includes(lower)) {
-          updates.data_type = lower as VariableDataType;
-        }
+        if (lower.includes('sayı') || lower === 'numeric') updates.data_type = 'numeric';
+        else if (lower.includes('metin') || lower === 'string') updates.data_type = 'string';
+        else if (lower.includes('tarih') || lower === 'date') updates.data_type = 'date';
+        else if (lower.includes('mantık') || lower === 'boolean') updates.data_type = 'boolean';
       }
 
       if (Object.keys(updates).length > 0) {
@@ -119,12 +147,12 @@ export const VariableViewGrid: React.FC<VariableViewGridProps> = ({
 
   return (
     <SpreadsheetWrapper
-      title="Variable View (SPSS Metadata Dictionary)"
-      countLabel={`${variables.length} defined variables`}
+      title="Değişken Görünümü (SPSS Meta Veri Sözlüğü)"
+      countLabel={`${variables.length} tanımlı değişken`}
     >
       {variables.length === 0 ? (
         <div className="flex items-center justify-center h-64 text-sm text-slate-500">
-          No variables available.
+          Değişken bulunamadı.
         </div>
       ) : (
         <ReactGrid

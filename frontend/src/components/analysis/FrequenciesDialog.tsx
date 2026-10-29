@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 const frequenciesSchema = z.object({
-  variable_names: z.array(z.string()).min(1, 'Please select at least one variable'),
+  variable_names: z.array(z.string()).min(1, 'Lütfen en az bir değişken seçin'),
 });
 
 type FrequenciesFormData = z.infer<typeof frequenciesSchema>;
@@ -88,7 +88,7 @@ export const FrequenciesDialog: React.FC<FrequenciesDialogProps> = ({
       setFrequenciesOpen(false);
       setActiveAnalysis(result.id);
     } catch (err: any) {
-      alert(`Error running frequencies: ${err.message}`);
+      alert(`Frekans analizi hatası: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -98,9 +98,9 @@ export const FrequenciesDialog: React.FC<FrequenciesDialogProps> = ({
     <Dialog open={isFrequenciesOpen} onOpenChange={setFrequenciesOpen}>
       <DialogContent className="max-w-xl" onClose={() => setFrequenciesOpen(false)}>
         <DialogHeader>
-          <DialogTitle>Frequencies: Counts and Percentages</DialogTitle>
+          <DialogTitle>Frekans Dağılımı ve Sayımlar</DialogTitle>
           <DialogDescription>
-            Compute frequency tables, percentages, valid percentages, and cumulative distributions.
+            Frekans tabloları, yüzdeler, geçerli yüzdeler ve kümülatif dağılımları hesaplayın.
           </DialogDescription>
         </DialogHeader>
 
@@ -114,7 +114,7 @@ export const FrequenciesDialog: React.FC<FrequenciesDialogProps> = ({
           <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center my-3 text-xs">
             <div className="flex flex-col h-60 border border-slate-300 rounded bg-slate-50">
               <div className="px-2 py-1 bg-slate-100 font-semibold border-b border-slate-200 text-slate-700">
-                Variables:
+                Değişkenler:
               </div>
               <div className="flex-1 overflow-y-auto p-1 bg-white">
                 {availableList.map((vName) => {
@@ -147,7 +147,7 @@ export const FrequenciesDialog: React.FC<FrequenciesDialogProps> = ({
 
             <div className="flex flex-col h-60 border border-slate-300 rounded bg-slate-50">
               <div className="px-2 py-1 bg-slate-100 font-semibold border-b border-slate-200 text-slate-700">
-                Variable(s):
+                Seçilen Değişkenler:
               </div>
               <div className="flex-1 overflow-y-auto p-1 bg-white">
                 {selectedList.map((vName) => (
@@ -168,10 +168,10 @@ export const FrequenciesDialog: React.FC<FrequenciesDialogProps> = ({
 
           <DialogFooter>
             <Button type="button" variant="outline" size="sm" onClick={() => setFrequenciesOpen(false)}>
-              Cancel
+              İptal
             </Button>
             <Button type="submit" size="sm" disabled={selectedList.length === 0 || loading} className="bg-blue-600 hover:bg-blue-700 text-white">
-              {loading ? 'Processing...' : 'Run Frequencies (OK)'}
+              {loading ? 'Hesaplanıyor...' : 'Frekansları Hesapla (Tamam)'}
             </Button>
           </DialogFooter>
         </form>

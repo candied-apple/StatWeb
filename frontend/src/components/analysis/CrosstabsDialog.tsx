@@ -42,7 +42,7 @@ export const CrosstabsDialog: React.FC<CrosstabsDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!rowVar || !colVar) {
-      setErrorMsg('Please select both a row and a column variable.');
+      setErrorMsg('Lütfen hem satır hem sütun değişkenini seçin.');
       return;
     }
     setLoading(true);
@@ -56,7 +56,7 @@ export const CrosstabsDialog: React.FC<CrosstabsDialogProps> = ({
       setCrosstabsOpen(false);
       setActiveAnalysis(result.id);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to compute cross-tabulation.');
+      setErrorMsg(err.message || 'Çapraz tablo hesaplanamadı.');
     } finally {
       setLoading(false);
     }
@@ -66,9 +66,9 @@ export const CrosstabsDialog: React.FC<CrosstabsDialogProps> = ({
     <Dialog open={isCrosstabsOpen} onOpenChange={setCrosstabsOpen}>
       <DialogContent onClose={() => setCrosstabsOpen(false)}>
         <DialogHeader>
-          <DialogTitle>Crosstabs & Chi-Square Tests</DialogTitle>
+          <DialogTitle>Çapraz Tablolar ve Ki-Kare Testleri</DialogTitle>
           <DialogDescription>
-            Compute contingency tables, row and column percentages, Pearson Chi-Square, and Cramer's V.
+            Kontenjans tabloları, satır ve sütun yüzdeleri, Pearson Ki-Kare ve Cramer's V katsayılarını hesaplayın.
           </DialogDescription>
         </DialogHeader>
 
@@ -80,7 +80,7 @@ export const CrosstabsDialog: React.FC<CrosstabsDialogProps> = ({
           )}
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Row Variable(s)</label>
+            <label className="font-semibold text-slate-700 block mb-1">Satır Değişkeni</label>
             <select
               value={rowVar}
               onChange={(e) => setRowVar(e.target.value)}
@@ -95,7 +95,7 @@ export const CrosstabsDialog: React.FC<CrosstabsDialogProps> = ({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Column Variable(s)</label>
+            <label className="font-semibold text-slate-700 block mb-1">Sütun Değişkeni</label>
             <select
               value={colVar}
               onChange={(e) => setColVar(e.target.value)}
@@ -111,10 +111,10 @@ export const CrosstabsDialog: React.FC<CrosstabsDialogProps> = ({
 
           <DialogFooter>
             <Button type="button" variant="outline" size="sm" onClick={() => setCrosstabsOpen(false)}>
-              Cancel
+              İptal
             </Button>
             <Button type="submit" size="sm" disabled={loading} className="bg-blue-600 hover:bg-blue-700 text-white">
-              {loading ? 'Calculating...' : 'Run Crosstabs (OK)'}
+              {loading ? 'Hesaplanıyor...' : 'Çapraz Tabloyu Çalıştır (Tamam)'}
             </Button>
           </DialogFooter>
         </form>

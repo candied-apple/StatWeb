@@ -24,7 +24,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
   onOffsetChange,
   isLoading,
 }) => {
-  // Build ReactGrid columns: row index column + variable columns
+  // ReactGrid sütunları: satır numarası + değişken sütunları
   const columns: Column[] = [
     { columnId: '__row_num', width: 60, resizable: false },
     ...variables.map((v) => ({
@@ -34,19 +34,23 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
     })),
   ];
 
-  // Header row
+  // Başlık satırı
   const headerRow: Row = {
     rowId: 'header',
     cells: [
       { type: 'header', text: '' },
-      ...variables.map((v) => ({
-        type: 'header' as const,
-        text: `${v.name} [${v.measurement_level[0].toUpperCase()}]`,
-      })),
+      ...variables.map((v) => {
+        const measureShort =
+          v.measurement_level === 'nominal' ? 'Nom' : v.measurement_level === 'ordinal' ? 'Sıra' : 'Ölç';
+        return {
+          type: 'header' as const,
+          text: `${v.name} [${measureShort}]`,
+        };
+      }),
     ],
   };
 
-  // Data rows
+  // Veri satırları
   const rows: Row[] = [
     headerRow,
     ...dataRows.map((rowObj, idx) => {
@@ -58,7 +62,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
           ...variables.map((v) => {
             const rawVal = rowObj[v.name];
             if (rawVal === null || rawVal === undefined) {
-              return { type: 'text' as const, text: '.' }; // SPSS dot notation for system missing
+              return { type: 'text' as const, text: '.' }; // SPSS sistem kayıp gösterimi
             }
             if (v.data_type === 'numeric' && typeof rawVal === 'number') {
               const formatted = rawVal.toFixed(v.decimals ?? 2);
@@ -71,9 +75,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
     }),
   ];
 
-  const handleCellsChanged = (_changes: CellChange[]) => {
-    // In future increments, cell edits can be committed to the backend.
-  };
+  const handleCellsChanged = (_changes: CellChange[]) => {};
 
   const totalPages = Math.ceil(totalRows / limit) || 1;
   const currentPage = Math.floor(offset / limit) + 1;
@@ -81,16 +83,16 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
   return (
     <div className="flex flex-col h-full w-full">
       <SpreadsheetWrapper
-        title="Data View (Spreadsheet Cases & Variables)"
-        countLabel={`Showing cases ${totalRows > 0 ? offset + 1 : 0} to ${Math.min(offset + dataRows.length, totalRows)} of ${totalRows}`}
+        title="Veri Görünümü (Gözlemler ve Değişkenler)"
+        countLabel={`Gözlemler: ${totalRows > 0 ? offset + 1 : 0} - ${Math.min(offset + dataRows.length, totalRows)} / ${totalRows}`}
       >
         {isLoading ? (
           <div className="flex items-center justify-center h-64 text-sm text-slate-500">
-            Loading dataset observations...
+            Veri gözlemleri yükleniyor...
           </div>
         ) : variables.length === 0 ? (
           <div className="flex items-center justify-center h-64 text-sm text-slate-500">
-            No variables found in this dataset.
+            Bu veri setinde değişken tanımlanmamış.
           </div>
         ) : (
           <ReactGrid
@@ -104,10 +106,10 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
         )}
       </SpreadsheetWrapper>
 
-      {/* Pagination Bar */}
+      {/* Sayfalama Çubuğu */}
       <div className="flex items-center justify-between px-3 py-2 bg-slate-50 border-t border-slate-200 text-xs">
         <span className="text-slate-600 font-medium">
-          Page {currentPage} of {totalPages} ({totalRows} total cases)
+          Sayfa {currentPage} / {totalPages} ({totalRows} toplam gözlem)
         </span>
         <div className="flex items-center space-x-2">
           <Button
@@ -117,7 +119,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
             onClick={() => onOffsetChange(Math.max(0, offset - limit))}
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Previous
+            Önceki
           </Button>
           <Button
             variant="outline"
@@ -125,7 +127,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
             disabled={offset + limit >= totalRows || isLoading}
             onClick={() => onOffsetChange(offset + limit)}
           >
-            Next
+            Sonraki
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>

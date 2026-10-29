@@ -10,6 +10,7 @@ Backend: pytest, plus the project’s configured lint/typecheck commands.
 Frontend: tsc --noEmit, lint, and vite build.
 Any new or changed analysis must have a test comparing output against known reference values (SPSS or R results).
 Repo-specific conventions
+The entire user interface, menus, dialogs, statistical output tables, charts, status bars, warnings, and generated PDF reports must be in Turkish (Türkçe). Terminology must follow standard academic Turkish statistical nomenclature.
 ReactGrid is the display/interaction layer only. Filtering, computation, variable metadata, and analysis history belong in app logic or the backend, not in grid components.
 Zustand holds UI state only (active dataset, cell selection). Server data goes through TanStack Query; must not duplicate it in Zustand.
 Forms use React Hook Form + Zod. Mirror validation rules in Pydantic models; keep the two in sync.
