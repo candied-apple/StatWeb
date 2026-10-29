@@ -15,6 +15,12 @@ export const AppHeader: React.FC = () => {
     activeDatasetId,
     setUploadOpen,
     setDescriptivesOpen,
+    setFrequenciesOpen,
+    setCrosstabsOpen,
+    setTTestOpen,
+    setAnovaOpen,
+    setCorrelationOpen,
+    setRegressionOpen,
     setNewProjectOpen,
     setActiveTab,
   } = useUIStore();
@@ -99,32 +105,62 @@ export const AppHeader: React.FC = () => {
                   Descriptives...
                 </button>
                 <button
-                  disabled
-                  className="w-full text-left px-3 py-1.5 text-slate-400 cursor-not-allowed flex items-center"
+                  onClick={() => setFrequenciesOpen(true)}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  Frequencies... (Phase 4)
+                  <Play className="h-3.5 w-3.5 mr-2 text-indigo-600" />
+                  Frequencies...
                 </button>
                 <button
-                  disabled
-                  className="w-full text-left px-3 py-1.5 text-slate-400 cursor-not-allowed flex items-center"
+                  onClick={() => setCrosstabsOpen(true)}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  Crosstabs... (Phase 4)
+                  <Play className="h-3.5 w-3.5 mr-2 text-purple-600" />
+                  Crosstabs...
                 </button>
+
                 <div className="border-t border-slate-200 my-1" />
                 <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   Compare Means
                 </div>
                 <button
-                  disabled
-                  className="w-full text-left px-3 py-1.5 text-slate-400 cursor-not-allowed"
+                  onClick={() => setTTestOpen(true)}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  Independent-Samples T Test...
+                  <Play className="h-3.5 w-3.5 mr-2 text-emerald-600" />
+                  T-Test (Independent / Paired)...
                 </button>
                 <button
-                  disabled
-                  className="w-full text-left px-3 py-1.5 text-slate-400 cursor-not-allowed"
+                  onClick={() => setAnovaOpen(true)}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
                 >
+                  <Play className="h-3.5 w-3.5 mr-2 text-emerald-600" />
                   One-Way ANOVA...
+                </button>
+
+                <div className="border-t border-slate-200 my-1" />
+                <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Associative Models
+                </div>
+                <button
+                  onClick={() => setCorrelationOpen(true)}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Play className="h-3.5 w-3.5 mr-2 text-amber-600" />
+                  Bivariate Correlations...
+                </button>
+                <button
+                  onClick={() => setRegressionOpen(true)}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Play className="h-3.5 w-3.5 mr-2 text-amber-600" />
+                  Linear Regression...
                 </button>
               </div>
             )}
@@ -178,12 +214,12 @@ export const AppHeader: React.FC = () => {
             </button>
             {activeMenu === 'help' && (
               <div
-                className="absolute left-0 mt-1 w-48 bg-white border border-slate-300 shadow-lg rounded-sm py-1 z-50 text-xs"
+                className="absolute left-0 mt-1 w-52 bg-white border border-slate-300 shadow-lg rounded-sm py-1 z-50 text-xs"
                 onClick={closeMenu}
               >
                 <div className="px-3 py-2 text-slate-600">
-                  <p className="font-semibold text-slate-900">StatWeb v0.1.0 MVP</p>
-                  <p className="mt-1 text-[11px]">SPSS-style web computing platform with SciPy & statsmodels.</p>
+                  <p className="font-semibold text-slate-900">StatWeb v0.2.0</p>
+                  <p className="mt-1 text-[11px]">SPSS-style web computing platform with SciPy, statsmodels, and WeasyPrint PDF reports.</p>
                 </div>
               </div>
             )}
@@ -213,7 +249,29 @@ export const AppHeader: React.FC = () => {
           className="h-7 text-xs bg-blue-700 hover:bg-blue-800 text-white"
         >
           <Play className="h-3.5 w-3.5 mr-1.5 fill-current" />
-          Descriptive Statistics
+          Descriptives
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={!activeDatasetId}
+          onClick={() => setFrequenciesOpen(true)}
+          className="h-7 text-xs bg-white shadow-none"
+        >
+          <Play className="h-3.5 w-3.5 mr-1.5 text-indigo-600" />
+          Frequencies
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={!activeDatasetId}
+          onClick={() => setCrosstabsOpen(true)}
+          className="h-7 text-xs bg-white shadow-none"
+        >
+          <Play className="h-3.5 w-3.5 mr-1.5 text-purple-600" />
+          Crosstabs
         </Button>
 
         <div className="h-4 w-px bg-slate-300 mx-1" />

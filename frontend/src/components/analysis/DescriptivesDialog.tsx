@@ -32,7 +32,8 @@ export const DescriptivesDialog: React.FC<DescriptivesDialogProps> = ({
   variables,
 }) => {
   const { isDescriptivesOpen, setDescriptivesOpen, setActiveAnalysis } = useUIStore();
-  const { runDescriptives, isRunning } = useAnalyses(datasetId);
+  const { runDescriptives } = useAnalyses(datasetId);
+  const [loading, setLoading] = useState(false);
 
   // Available variables (numeric/scale preferred, or all)
   const candidateVars = variables.map((v) => v.name);
@@ -87,6 +88,7 @@ export const DescriptivesDialog: React.FC<DescriptivesDialogProps> = ({
 
   const onSubmit = async () => {
     if (selectedList.length === 0) return;
+    setLoading(true);
     try {
       const result = await runDescriptives({
         dataset_id: datasetId,
@@ -96,6 +98,8 @@ export const DescriptivesDialog: React.FC<DescriptivesDialogProps> = ({
       setActiveAnalysis(result.id);
     } catch (err: any) {
       alert(`Error running descriptive statistics: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -209,10 +213,10 @@ export const DescriptivesDialog: React.FC<DescriptivesDialogProps> = ({
             <Button
               type="submit"
               size="sm"
-              disabled={selectedList.length === 0 || isRunning}
+              disabled={selectedList.length === 0 || loading}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {isRunning ? 'Calculating...' : 'Run Analysis (OK)'}
+              {loading ? 'Calculating...' : 'Run Analysis (OK)'}
             </Button>
           </DialogFooter>
         </form>

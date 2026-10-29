@@ -7,8 +7,50 @@ from pydantic import BaseModel, ConfigDict, Field
 class DescriptivesRequest(BaseModel):
     dataset_id: uuid.UUID
     variable_names: List[str] = Field(..., min_length=1)
-    statistics: Optional[List[str]] = None  # mean, std, median, quartiles, etc.
-    missing_strategy: str = "exclude_user_missing"  # exclude_user_missing, include_all
+    statistics: Optional[List[str]] = None
+    missing_strategy: str = "exclude_user_missing"
+
+
+class FrequenciesRequest(BaseModel):
+    dataset_id: uuid.UUID
+    variable_names: List[str] = Field(..., min_length=1)
+
+
+class CrosstabRequest(BaseModel):
+    dataset_id: uuid.UUID
+    row_variable: str
+    column_variable: str
+
+
+class IndependentTTestRequest(BaseModel):
+    dataset_id: uuid.UUID
+    test_variable: str
+    group_variable: str
+    group1_value: Any
+    group2_value: Any
+
+
+class PairedTTestRequest(BaseModel):
+    dataset_id: uuid.UUID
+    pair1_variable: str
+    pair2_variable: str
+
+
+class AnovaRequest(BaseModel):
+    dataset_id: uuid.UUID
+    dependent_variable: str
+    factor_variable: str
+
+
+class CorrelationRequest(BaseModel):
+    dataset_id: uuid.UUID
+    variable_names: List[str] = Field(..., min_length=2)
+
+
+class RegressionRequest(BaseModel):
+    dataset_id: uuid.UUID
+    dependent_variable: str
+    independent_variables: List[str] = Field(..., min_length=1)
 
 
 class AnalysisRunResponse(BaseModel):

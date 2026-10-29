@@ -7,6 +7,12 @@ import { DataViewGrid } from '@/components/spreadsheet/DataViewGrid';
 import { VariableViewGrid } from '@/components/spreadsheet/VariableViewGrid';
 import { AnalysisResultsViewer } from '@/components/analysis/AnalysisResultsViewer';
 import { DescriptivesDialog } from '@/components/analysis/DescriptivesDialog';
+import { FrequenciesDialog } from '@/components/analysis/FrequenciesDialog';
+import { CrosstabsDialog } from '@/components/analysis/CrosstabsDialog';
+import { TTestDialog } from '@/components/analysis/TTestDialog';
+import { AnovaDialog } from '@/components/analysis/AnovaDialog';
+import { CorrelationDialog } from '@/components/analysis/CorrelationDialog';
+import { RegressionDialog } from '@/components/analysis/RegressionDialog';
 import { UploadDatasetModal } from '@/components/modals/UploadDatasetModal';
 import { NewProjectModal } from '@/components/modals/NewProjectModal';
 import { FileSpreadsheet, Upload, Database } from 'lucide-react';
@@ -33,7 +39,6 @@ export const DatasetWorkspace: React.FC = () => {
   const { updateVariable } = useVariables(activeDatasetId || undefined);
   const { data: analysisRun } = useAnalysisRun(activeAnalysisId);
 
-  // Reset offset when dataset changes
   React.useEffect(() => {
     setDataOffset(0);
   }, [activeDatasetId]);
@@ -106,13 +111,19 @@ export const DatasetWorkspace: React.FC = () => {
         <AnalysisResultsViewer analysisRun={analysisRun} />
       )}
 
-      {/* Analysis & Upload Dialogs */}
+      {/* Analysis Modals */}
       {dataset && (
-        <DescriptivesDialog
-          datasetId={dataset.id}
-          variables={variables}
-        />
+        <>
+          <DescriptivesDialog datasetId={dataset.id} variables={variables} />
+          <FrequenciesDialog datasetId={dataset.id} variables={variables} />
+          <CrosstabsDialog datasetId={dataset.id} variables={variables} />
+          <TTestDialog datasetId={dataset.id} variables={variables} />
+          <AnovaDialog datasetId={dataset.id} variables={variables} />
+          <CorrelationDialog datasetId={dataset.id} variables={variables} />
+          <RegressionDialog datasetId={dataset.id} variables={variables} />
+        </>
       )}
+
       <UploadDatasetModal />
       <NewProjectModal />
     </div>
