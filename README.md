@@ -4,6 +4,8 @@ StatWeb, öğrenciler, akademisyenler ve araştırmacılar için tasarlanmış, 
 
 Kullanıcılara tanıdık gelen elektronik tablo görünümü (**Veri Görünümü** ve **Değişken Görünümü**), veri dönüştürme araçları, bağımsız Python istatistik motoru, etkileşimli Plotly.js grafikleri ve WeasyPrint ile akademik PDF raporlama imkanı sunar.
 
+> 🗺️ **Proje Yol Haritası:** Tamamlanan ve önümüzdeki fazlarda eklenecek özellikleri incelemek için **[ROADMAP.md](ROADMAP.md)** belgesine göz atabilirsiniz.
+
 ---
 
 ## 🚀 Temel Özellikler
