@@ -15,6 +15,10 @@ import { CorrelationDialog } from '@/components/analysis/CorrelationDialog';
 import { RegressionDialog } from '@/components/analysis/RegressionDialog';
 import { UploadDatasetModal } from '@/components/modals/UploadDatasetModal';
 import { NewProjectModal } from '@/components/modals/NewProjectModal';
+import { AddVariableModal } from '@/components/modals/AddVariableModal';
+import { ComputeVariableModal } from '@/components/modals/ComputeVariableModal';
+import { RecodeVariableModal } from '@/components/modals/RecodeVariableModal';
+import { ValueLabelsModal } from '@/components/modals/ValueLabelsModal';
 import { FileSpreadsheet, Upload, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -30,7 +34,14 @@ export const DatasetWorkspace: React.FC = () => {
   const [dataOffset, setDataOffset] = useState<number>(0);
   const dataLimit = 50;
 
-  const { dataset, isLoading: isDatasetLoading } = useDataset(activeDatasetId);
+  const {
+    dataset,
+    isLoading: isDatasetLoading,
+    updateCells,
+    addRow,
+    exportDataset,
+  } = useDataset(activeDatasetId);
+
   const { data: dataPage, isLoading: isDataLoading } = useDatasetData(
     activeDatasetId,
     dataOffset,
@@ -94,6 +105,9 @@ export const DatasetWorkspace: React.FC = () => {
           offset={dataOffset}
           limit={dataLimit}
           onOffsetChange={setDataOffset}
+          onUpdateCells={updateCells}
+          onAddRow={() => addRow()}
+          onExport={exportDataset}
           isLoading={isDatasetLoading || isDataLoading}
         />
       )}
@@ -111,7 +125,7 @@ export const DatasetWorkspace: React.FC = () => {
         <AnalysisResultsViewer analysisRun={analysisRun} />
       )}
 
-      {/* Analiz Modalları */}
+      {/* Analiz & İşlem Modalları */}
       {dataset && (
         <>
           <DescriptivesDialog datasetId={dataset.id} variables={variables} />
@@ -121,6 +135,10 @@ export const DatasetWorkspace: React.FC = () => {
           <AnovaDialog datasetId={dataset.id} variables={variables} />
           <CorrelationDialog datasetId={dataset.id} variables={variables} />
           <RegressionDialog datasetId={dataset.id} variables={variables} />
+          <AddVariableModal />
+          <ComputeVariableModal variables={variables} />
+          <RecodeVariableModal variables={variables} />
+          <ValueLabelsModal variables={variables} datasetId={dataset.id} />
         </>
       )}
 

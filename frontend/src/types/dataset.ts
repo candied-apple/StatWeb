@@ -22,3 +22,39 @@ export interface DatasetDataPage {
   columns: string[];
   rows: Record<string, any>[];
 }
+
+export interface CellUpdateItem {
+  row_index: number;
+  column_name: string;
+  value: any;
+}
+
+export interface AddVariablePayload {
+  name: string;
+  data_type?: 'numeric' | 'string' | 'date' | 'boolean';
+  label?: string;
+  measurement_level?: 'scale' | 'nominal' | 'ordinal';
+  decimals?: number;
+}
+
+export interface ComputeVariablePayload {
+  target_variable: string;
+  expression: string;
+  label?: string;
+}
+
+export interface RecodeRule {
+  old_value?: any;
+  new_value: any;
+  is_range?: boolean;
+  range_min?: number;
+  range_max?: number;
+  is_else?: boolean;
+}
+
+export interface RecodeVariablePayload {
+  source_variable: string;
+  target_variable: string;
+  rules: RecodeRule[];
+  label?: string;
+}

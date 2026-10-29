@@ -1,10 +1,13 @@
-import uuid
+import io
+import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, List, Dict, Any, Tuple
 import pandas as pd
 import numpy as np
 import pyreadstat
 from sqlalchemy.orm import Session
+import uuid
 
 from app.models.dataset import Dataset
 from app.models.variable import Variable
@@ -57,7 +60,6 @@ class DatasetService:
             for idx, col_name in enumerate(meta.column_names):
                 label = meta.column_names_to_labels.get(col_name) if meta.column_names_to_labels else None
                 measure = meta.variable_measure.get(col_name, "scale") if meta.variable_measure else "scale"
-                # Map SPSS measure names: scale, nominal, ordinal
                 measure_str = str(measure).lower()
                 if measure_str not in ["scale", "nominal", "ordinal"]:
                     measure_str = "scale"
@@ -68,7 +70,6 @@ class DatasetService:
                 missing_user = meta.missing_user_values.get(col_name) if meta.missing_user_values else []
                 missing_list = list(missing_user) if missing_user else None
 
-                # Infer dtype
                 col_series = df[col_name]
                 if pd.api.types.is_numeric_dtype(col_series):
                     dtype_str = "numeric"
@@ -126,10 +127,8 @@ class DatasetService:
                     "decimals": decimals,
                 })
 
-        # 3. Convert DataFrame to Parquet for fast columnar and paginated reading
-        # Ensure column names are all string
+        # 3. Convert DataFrame to Parquet
         df.columns = [str(c) for c in df.columns]
-        # Save parquet file locally via storage path
         local_parquet_path = storage.base_dir / parquet_key
         local_parquet_path.parent.mkdir(parents=True, exist_ok=True)
         df.to_parquet(local_parquet_path, engine="pyarrow", index=False)
@@ -218,3 +217,348 @@ class DatasetService:
             else:
                 result[col] = []
         return result
+
+    @classmethod
+    def update_cells(
+        cls,
+        db: Session,
+        storage: StorageBackend,
+        dataset: Dataset,
+        updates: List[Dict[str, Any]],
+    ) -> int:
+        """Updates specific cell values in the dataset Parquet file."""
+        parquet_path = storage.get_local_path(dataset.parquet_storage_key)
+        df = pd.read_parquet(parquet_path, engine="pyarrow")
+        n_rows = len(df)
+
+        # Get variable types map
+        vars_in_db = db.query(Variable).filter(Variable.dataset_id == dataset.id).all()
+        type_map = {v.name: v.data_type for v in vars_in_db}
+
+        updated_count = 0
+        for item in updates:
+            r_idx = item["row_index"]
+            c_name = item["column_name"]
+            val = item.get("value")
+
+            if r_idx < 0 or r_idx >= n_rows:
+                continue
+            if c_name not in df.columns:
+                continue
+
+            var_type = type_map.get(c_name, "numeric")
+            if val is None or val == "" or val == ".":
+                df.at[r_idx, c_name] = np.nan if var_type == "numeric" else None
+            else:
+                if var_type == "numeric":
+                    try:
+                        df.at[r_idx, c_name] = float(val)
+                    except (ValueError, TypeError):
+                        df.at[r_idx, c_name] = np.nan
+                else:
+                    df.at[r_idx, c_name] = str(val)
+            updated_count += 1
+
+        df.to_parquet(parquet_path, engine="pyarrow", index=False)
+        dataset.updated_at = datetime.now(timezone.utc)
+        db.commit()
+        return updated_count
+
+    @classmethod
+    def add_row(
+        cls,
+        db: Session,
+        storage: StorageBackend,
+        dataset: Dataset,
+        values: Optional[Dict[str, Any]] = None,
+    ) -> int:
+        """Appends a new case (row) to the dataset."""
+        parquet_path = storage.get_local_path(dataset.parquet_storage_key)
+        df = pd.read_parquet(parquet_path, engine="pyarrow")
+
+        new_row = {}
+        for col in df.columns:
+            new_row[col] = values.get(col, np.nan) if values else np.nan
+
+        new_df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+        new_df.to_parquet(parquet_path, engine="pyarrow", index=False)
+
+        dataset.row_count = len(new_df)
+        dataset.updated_at = datetime.now(timezone.utc)
+        db.commit()
+        return dataset.row_count
+
+    @classmethod
+    def delete_row(
+        cls,
+        db: Session,
+        storage: StorageBackend,
+        dataset: Dataset,
+        row_index: int,
+    ) -> int:
+        """Deletes a case (row) at specified 0-indexed position."""
+        parquet_path = storage.get_local_path(dataset.parquet_storage_key)
+        df = pd.read_parquet(parquet_path, engine="pyarrow")
+
+        if row_index < 0 or row_index >= len(df):
+            raise ValueError(f"Invalid row index {row_index}. Dataset has {len(df)} rows.")
+
+        new_df = df.drop(index=row_index).reset_index(drop=True)
+        new_df.to_parquet(parquet_path, engine="pyarrow", index=False)
+
+        dataset.row_count = len(new_df)
+        dataset.updated_at = datetime.now(timezone.utc)
+        db.commit()
+        return dataset.row_count
+
+    @classmethod
+    def add_variable(
+        cls,
+        db: Session,
+        storage: StorageBackend,
+        dataset: Dataset,
+        name: str,
+        data_type: str = "numeric",
+        label: Optional[str] = None,
+        measurement_level: str = "scale",
+        decimals: int = 2,
+    ) -> Variable:
+        """Adds a new variable column to the dataset and database."""
+        clean_name = re.sub(r"[^\w]", "_", name.strip())
+        if not clean_name:
+            raise ValueError("Variable name cannot be empty or invalid.")
+
+        # Check existing
+        existing = (
+            db.query(Variable)
+            .filter(Variable.dataset_id == dataset.id, Variable.name == clean_name)
+            .first()
+        )
+        if existing:
+            raise ValueError(f"Variable '{clean_name}' already exists in this dataset.")
+
+        parquet_path = storage.get_local_path(dataset.parquet_storage_key)
+        df = pd.read_parquet(parquet_path, engine="pyarrow")
+
+        df[clean_name] = np.nan if data_type == "numeric" else None
+        df.to_parquet(parquet_path, engine="pyarrow", index=False)
+
+        new_var = Variable(
+            dataset_id=dataset.id,
+            name=clean_name,
+            column_index=len(df.columns) - 1,
+            label=label or clean_name,
+            data_type=data_type,
+            measurement_level=measurement_level,
+            role="input",
+            decimals=decimals,
+            display_width=10,
+        )
+        db.add(new_var)
+        dataset.column_count = len(df.columns)
+        dataset.updated_at = datetime.now(timezone.utc)
+        db.commit()
+        db.refresh(new_var)
+        return new_var
+
+    @classmethod
+    def delete_variable(
+        cls,
+        db: Session,
+        storage: StorageBackend,
+        dataset: Dataset,
+        variable_name: str,
+    ) -> None:
+        """Removes a variable column from the dataset and database."""
+        target_var = (
+            db.query(Variable)
+            .filter(Variable.dataset_id == dataset.id, Variable.name == variable_name)
+            .first()
+        )
+        if not target_var:
+            raise ValueError(f"Variable '{variable_name}' not found.")
+
+        parquet_path = storage.get_local_path(dataset.parquet_storage_key)
+        df = pd.read_parquet(parquet_path, engine="pyarrow")
+
+        if variable_name in df.columns:
+            df = df.drop(columns=[variable_name])
+            df.to_parquet(parquet_path, engine="pyarrow", index=False)
+
+        db.delete(target_var)
+
+        # Re-index remaining variables
+        remaining_vars = (
+            db.query(Variable)
+            .filter(Variable.dataset_id == dataset.id, Variable.name != variable_name)
+            .order_by(Variable.column_index)
+            .all()
+        )
+        for idx, v in enumerate(remaining_vars):
+            v.column_index = idx
+
+        dataset.column_count = len(remaining_vars)
+        dataset.updated_at = datetime.now(timezone.utc)
+        db.commit()
+
+    @classmethod
+    def export_dataset(
+        cls,
+        storage: StorageBackend,
+        dataset: Dataset,
+        export_format: str = "csv",
+    ) -> Tuple[bytes, str, str]:
+        """Exports dataset to CSV or Excel bytes."""
+        parquet_path = storage.get_local_path(dataset.parquet_storage_key)
+        df = pd.read_parquet(parquet_path, engine="pyarrow")
+
+        clean_format = export_format.lower()
+        if clean_format == "xlsx":
+            buffer = io.BytesIO()
+            with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
+                df.to_excel(writer, index=False)
+            content = buffer.getvalue()
+            media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            filename = f"{dataset.name}.xlsx"
+        else:
+            content = df.to_csv(index=False).encode("utf-8")
+            media_type = "text/csv; charset=utf-8"
+            filename = f"{dataset.name}.csv"
+
+        return content, media_type, filename
+
+    @classmethod
+    def compute_variable(
+        cls,
+        db: Session,
+        storage: StorageBackend,
+        dataset: Dataset,
+        target_variable: str,
+        expression: str,
+        label: Optional[str] = None,
+    ) -> Variable:
+        """Safely evaluates an arithmetic or transformation expression and stores as a new/updated variable."""
+        clean_target = re.sub(r"[^\w]", "_", target_variable.strip())
+        if not clean_target:
+            raise ValueError("Target variable name cannot be empty.")
+
+        parquet_path = storage.get_local_path(dataset.parquet_storage_key)
+        df = pd.read_parquet(parquet_path, engine="pyarrow")
+
+        # Prepare safe evaluation context
+        safe_env = {col: df[col] for col in df.columns}
+        safe_env.update({
+            "log": np.log,
+            "exp": np.exp,
+            "sqrt": np.sqrt,
+            "abs": np.abs,
+            "round": np.round,
+            "sin": np.sin,
+            "cos": np.cos,
+            "tan": np.tan,
+        })
+
+        try:
+            evaluated = eval(expression, {"__builtins__": {}}, safe_env)
+        except Exception as e:
+            raise ValueError(f"Expression evaluation error: {str(e)}")
+
+        df[clean_target] = evaluated
+        df.to_parquet(parquet_path, engine="pyarrow", index=False)
+
+        # Update or create variable in DB
+        var_record = (
+            db.query(Variable)
+            .filter(Variable.dataset_id == dataset.id, Variable.name == clean_target)
+            .first()
+        )
+        if not var_record:
+            var_record = Variable(
+                dataset_id=dataset.id,
+                name=clean_target,
+                column_index=len(df.columns) - 1,
+                label=label or clean_target,
+                data_type="numeric" if pd.api.types.is_numeric_dtype(df[clean_target]) else "string",
+                measurement_level="scale",
+                decimals=2,
+            )
+            db.add(var_record)
+            dataset.column_count = len(df.columns)
+        else:
+            if label:
+                var_record.label = label
+
+        dataset.updated_at = datetime.now(timezone.utc)
+        db.commit()
+        db.refresh(var_record)
+        return var_record
+
+    @classmethod
+    def recode_variable(
+        cls,
+        db: Session,
+        storage: StorageBackend,
+        dataset: Dataset,
+        source_variable: str,
+        target_variable: str,
+        rules: List[Dict[str, Any]],
+        label: Optional[str] = None,
+    ) -> Variable:
+        """Recodes values from a source variable into a target variable based on rules."""
+        parquet_path = storage.get_local_path(dataset.parquet_storage_key)
+        df = pd.read_parquet(parquet_path, engine="pyarrow")
+
+        if source_variable not in df.columns:
+            raise ValueError(f"Source variable '{source_variable}' not found.")
+
+        src = df[source_variable].copy()
+        tgt = pd.Series(index=df.index, dtype=object)
+
+        # Apply recode rules sequentially
+        for r in rules:
+            new_val = r["new_value"]
+            if r.get("is_else"):
+                mask = tgt.isna()
+                tgt[mask] = new_val
+            elif r.get("is_range"):
+                r_min = float(r.get("range_min", float("-inf")))
+                r_max = float(r.get("range_max", float("inf")))
+                numeric_src = pd.to_numeric(src, errors="coerce")
+                mask = (numeric_src >= r_min) & (numeric_src <= r_max) & tgt.isna()
+                tgt[mask] = new_val
+            else:
+                old_val = r.get("old_value")
+                # Type matching
+                mask = (src == old_val) & tgt.isna()
+                tgt[mask] = new_val
+
+        # If target variable is same as source, overwrite, otherwise append
+        clean_target = re.sub(r"[^\w]", "_", target_variable.strip())
+        df[clean_target] = tgt
+        df.to_parquet(parquet_path, engine="pyarrow", index=False)
+
+        var_record = (
+            db.query(Variable)
+            .filter(Variable.dataset_id == dataset.id, Variable.name == clean_target)
+            .first()
+        )
+        if not var_record:
+            var_record = Variable(
+                dataset_id=dataset.id,
+                name=clean_target,
+                column_index=len(df.columns) - 1,
+                label=label or clean_target,
+                data_type="numeric" if pd.api.types.is_numeric_dtype(df[clean_target]) else "string",
+                measurement_level="ordinal" if any(r.get("is_range") for r in rules) else "nominal",
+                decimals=2 if pd.api.types.is_numeric_dtype(df[clean_target]) else 0,
+            )
+            db.add(var_record)
+            dataset.column_count = len(df.columns)
+        else:
+            if label:
+                var_record.label = label
+
+        dataset.updated_at = datetime.now(timezone.utc)
+        db.commit()
+        db.refresh(var_record)
+        return var_record

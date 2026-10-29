@@ -19,6 +19,12 @@ interface UIState {
   isCorrelationOpen: boolean;
   isRegressionOpen: boolean;
 
+  // New Transformation & Variable Management Modals
+  isComputeOpen: boolean;
+  isRecodeOpen: boolean;
+  isAddVariableOpen: boolean;
+  selectedValueLabelVarId: string | null;
+
   // Actions
   setActiveProject: (id: string | null) => void;
   setActiveDataset: (id: string | null) => void;
@@ -33,6 +39,10 @@ interface UIState {
   setAnovaOpen: (open: boolean) => void;
   setCorrelationOpen: (open: boolean) => void;
   setRegressionOpen: (open: boolean) => void;
+  setComputeOpen: (open: boolean) => void;
+  setRecodeOpen: (open: boolean) => void;
+  setAddVariableOpen: (open: boolean) => void;
+  setSelectedValueLabelVarId: (id: string | null) => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -51,6 +61,11 @@ export const useUIStore = create<UIState>((set) => ({
   isCorrelationOpen: false,
   isRegressionOpen: false,
 
+  isComputeOpen: false,
+  isRecodeOpen: false,
+  isAddVariableOpen: false,
+  selectedValueLabelVarId: null,
+
   setActiveProject: (id) => set({ activeProjectId: id }),
   setActiveDataset: (id) => set({ activeDatasetId: id }),
   setActiveTab: (tab) => set({ activeTab: tab }),
@@ -64,4 +79,8 @@ export const useUIStore = create<UIState>((set) => ({
   setAnovaOpen: (open) => set({ isAnovaOpen: open }),
   setCorrelationOpen: (open) => set({ isCorrelationOpen: open }),
   setRegressionOpen: (open) => set({ isRegressionOpen: open }),
+  setComputeOpen: (open) => set({ isComputeOpen: open }),
+  setRecodeOpen: (open) => set({ isRecodeOpen: open }),
+  setAddVariableOpen: (open) => set({ isAddVariableOpen: open }),
+  setSelectedValueLabelVarId: (id) => set({ selectedValueLabelVarId: id }),
 }));

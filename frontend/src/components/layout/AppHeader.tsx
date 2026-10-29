@@ -6,8 +6,13 @@ import {
   Table,
   PlusCircle,
   Play,
+  Calculator,
+  Shuffle,
+  Download,
+  Plus,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/use-ui-store';
+import { useDataset } from '@/hooks/use-datasets';
 import { Button } from '@/components/ui/button';
 
 export const AppHeader: React.FC = () => {
@@ -22,9 +27,13 @@ export const AppHeader: React.FC = () => {
     setCorrelationOpen,
     setRegressionOpen,
     setNewProjectOpen,
+    setComputeOpen,
+    setRecodeOpen,
+    setAddVariableOpen,
     setActiveTab,
   } = useUIStore();
 
+  const { exportDataset } = useDataset(activeDatasetId);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   const handleMenuClick = (menuName: string) => {
@@ -35,7 +44,7 @@ export const AppHeader: React.FC = () => {
 
   return (
     <header className="flex flex-col bg-slate-100 border-b border-slate-300 select-none">
-      {/* Başlık ve Durum Çubuğu */}
+      {/* Üst Bilgi Başlığı */}
       <div className="flex items-center justify-between px-3 py-1 bg-slate-900 text-slate-100 text-xs font-semibold">
         <div className="flex items-center space-x-2">
           <FileSpreadsheet className="h-4 w-4 text-blue-400" />
@@ -49,7 +58,7 @@ export const AppHeader: React.FC = () => {
       {/* SPSS Klasik Menü Çubuğu */}
       <div className="relative flex items-center px-2 py-0.5 text-xs text-slate-800 bg-slate-200 border-b border-slate-300">
         <div className="flex items-center space-x-1">
-          {/* Dosya Menüsü */}
+          {/* 1. Dosya Menüsü */}
           <div className="relative">
             <button
               onClick={() => handleMenuClick('file')}
@@ -59,7 +68,7 @@ export const AppHeader: React.FC = () => {
             </button>
             {activeMenu === 'file' && (
               <div
-                className="absolute left-0 mt-1 w-52 bg-white border border-slate-300 shadow-lg rounded-sm py-1 z-50 text-xs"
+                className="absolute left-0 mt-1 w-56 bg-white border border-slate-300 shadow-lg rounded-sm py-1 z-50 text-xs"
                 onClick={closeMenu}
               >
                 <button
@@ -76,11 +85,70 @@ export const AppHeader: React.FC = () => {
                   <Upload className="h-3.5 w-3.5 mr-2 text-slate-500" />
                   Veri İçe Aktar (CSV, SAV, XLSX)...
                 </button>
+                <div className="border-t border-slate-200 my-1" />
+                <button
+                  onClick={() => exportDataset('csv')}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
+                >
+                  <Download className="h-3.5 w-3.5 mr-2 text-slate-500" />
+                  Veriyi CSV Olarak Dışa Aktar
+                </button>
+                <button
+                  onClick={() => exportDataset('xlsx')}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
+                >
+                  <Download className="h-3.5 w-3.5 mr-2 text-emerald-600" />
+                  Veriyi Excel Olarak Dışa Aktar
+                </button>
               </div>
             )}
           </div>
 
-          {/* Çözümle Menüsü (Analyze) */}
+          {/* 2. Dönüştür Menüsü (Transform) */}
+          <div className="relative">
+            <button
+              onClick={() => handleMenuClick('transform')}
+              className={`px-2 py-1 rounded hover:bg-slate-300 ${activeMenu === 'transform' ? 'bg-slate-300 font-semibold' : ''}`}
+            >
+              Dönüştür
+            </button>
+            {activeMenu === 'transform' && (
+              <div
+                className="absolute left-0 mt-1 w-60 bg-white border border-slate-300 shadow-lg rounded-sm py-1 z-50 text-xs"
+                onClick={closeMenu}
+              >
+                <button
+                  onClick={() => setComputeOpen(true)}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
+                >
+                  <Calculator className="h-3.5 w-3.5 mr-2 text-blue-600" />
+                  Değişken Hesapla (Compute)...
+                </button>
+                <button
+                  onClick={() => setRecodeOpen(true)}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
+                >
+                  <Shuffle className="h-3.5 w-3.5 mr-2 text-indigo-600" />
+                  Değişkeni Yeniden Kodla (Recode)...
+                </button>
+                <div className="border-t border-slate-200 my-1" />
+                <button
+                  onClick={() => setAddVariableOpen(true)}
+                  disabled={!activeDatasetId}
+                  className="w-full text-left px-3 py-1.5 hover:bg-blue-50 flex items-center disabled:opacity-40"
+                >
+                  <Plus className="h-3.5 w-3.5 mr-2 text-slate-500" />
+                  Yeni Değişken Ekle...
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* 3. Çözümle Menüsü (Analyze) */}
           <div className="relative">
             <button
               onClick={() => handleMenuClick('analyze')}
@@ -166,7 +234,7 @@ export const AppHeader: React.FC = () => {
             )}
           </div>
 
-          {/* Görünüm Menüsü */}
+          {/* 4. Görünüm Menüsü */}
           <div className="relative">
             <button
               onClick={() => handleMenuClick('view')}
@@ -204,7 +272,7 @@ export const AppHeader: React.FC = () => {
             )}
           </div>
 
-          {/* Yardım Menüsü */}
+          {/* 5. Yardım Menüsü */}
           <div className="relative">
             <button
               onClick={() => handleMenuClick('help')}
@@ -237,6 +305,30 @@ export const AppHeader: React.FC = () => {
         >
           <Upload className="h-3.5 w-3.5 mr-1.5 text-blue-600" />
           Veri İçe Aktar
+        </Button>
+
+        <div className="h-4 w-px bg-slate-300 mx-1" />
+
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={!activeDatasetId}
+          onClick={() => setComputeOpen(true)}
+          className="h-7 text-xs bg-white shadow-none"
+        >
+          <Calculator className="h-3.5 w-3.5 mr-1 text-blue-600" />
+          Değişken Hesapla
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={!activeDatasetId}
+          onClick={() => setRecodeOpen(true)}
+          className="h-7 text-xs bg-white shadow-none"
+        >
+          <Shuffle className="h-3.5 w-3.5 mr-1 text-indigo-600" />
+          Yeniden Kodla
         </Button>
 
         <div className="h-4 w-px bg-slate-300 mx-1" />

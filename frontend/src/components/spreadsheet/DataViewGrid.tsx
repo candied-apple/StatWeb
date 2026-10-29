@@ -2,8 +2,9 @@ import React from 'react';
 import { ReactGrid, Column, Row, CellChange } from '@silevis/reactgrid';
 import { Variable } from '@/types/variable';
 import { SpreadsheetWrapper } from './SpreadsheetWrapper';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Download, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useUIStore } from '@/stores/use-ui-store';
 
 interface DataViewGridProps {
   variables: Variable[];
@@ -12,6 +13,9 @@ interface DataViewGridProps {
   offset: number;
   limit: number;
   onOffsetChange: (newOffset: number) => void;
+  onUpdateCells?: (updates: { row_index: number; column_name: string; value: any }[]) => Promise<any>;
+  onAddRow?: () => Promise<any>;
+  onExport?: (format: 'csv' | 'xlsx') => void;
   isLoading?: boolean;
 }
 
@@ -22,8 +26,13 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
   offset,
   limit,
   onOffsetChange,
+  onUpdateCells,
+  onAddRow,
+  onExport,
   isLoading,
 }) => {
+  const { setAddVariableOpen } = useUIStore();
+
   // ReactGrid sütunları: satır numarası + değişken sütunları
   const columns: Column[] = [
     { columnId: '__row_num', width: 60, resizable: false },
@@ -62,7 +71,7 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
           ...variables.map((v) => {
             const rawVal = rowObj[v.name];
             if (rawVal === null || rawVal === undefined) {
-              return { type: 'text' as const, text: '.' }; // SPSS sistem kayıp gösterimi
+              return { type: 'text' as const, text: '.' };
             }
             if (v.data_type === 'numeric' && typeof rawVal === 'number') {
               const formatted = rawVal.toFixed(v.decimals ?? 2);
@@ -75,13 +84,84 @@ export const DataViewGrid: React.FC<DataViewGridProps> = ({
     }),
   ];
 
-  const handleCellsChanged = (_changes: CellChange[]) => {};
+  const handleCellsChanged = (changes: CellChange[]) => {
+    if (!onUpdateCells) return;
+    const cellUpdates: { row_index: number; column_name: string; value: any }[] = [];
+
+    changes.forEach((change) => {
+      const caseNumber = Number(change.rowId);
+      if (isNaN(caseNumber) || caseNumber < 1) return;
+      const rowIndex = caseNumber - 1; // 0-indexed in dataset
+      const colName = String(change.columnId);
+      if (colName === '__row_num') return;
+
+      const newText = 'text' in change.newCell ? change.newCell.text : null;
+      cellUpdates.push({
+        row_index: rowIndex,
+        column_name: colName,
+        value: newText === '.' ? null : newText,
+      });
+    });
+
+    if (cellUpdates.length > 0) {
+      onUpdateCells(cellUpdates);
+    }
+  };
 
   const totalPages = Math.ceil(totalRows / limit) || 1;
   const currentPage = Math.floor(offset / limit) + 1;
 
   return (
     <div className="flex flex-col h-full w-full">
+      {/* Veri İşlem Araç Çubuğu */}
+      <div className="flex items-center justify-between px-3 py-1.5 bg-slate-100 border-b border-slate-200 text-xs">
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onAddRow}
+            className="h-7 px-2.5 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
+          >
+            <Plus className="h-3.5 w-3.5 mr-1 text-blue-600" />
+            Yeni Gözlem Ekle
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setAddVariableOpen(true)}
+            className="h-7 px-2.5 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
+          >
+            <Plus className="h-3.5 w-3.5 mr-1 text-indigo-600" />
+            Yeni Değişken Ekle
+          </Button>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          {onExport && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onExport('csv')}
+                className="h-7 px-2 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
+              >
+                <Download className="h-3 w-3 mr-1 text-slate-500" />
+                CSV İndir
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onExport('xlsx')}
+                className="h-7 px-2 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
+              >
+                <FileSpreadsheet className="h-3 w-3 mr-1 text-emerald-600" />
+                Excel İndir
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+
       <SpreadsheetWrapper
         title="Veri Görünümü (Gözlemler ve Değişkenler)"
         countLabel={`Gözlemler: ${totalRows > 0 ? offset + 1 : 0} - ${Math.min(offset + dataRows.length, totalRows)} / ${totalRows}`}

@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ReactGrid, Column, Row, CellChange } from '@silevis/reactgrid';
 import { Variable } from '@/types/variable';
 import { SpreadsheetWrapper } from './SpreadsheetWrapper';
+import { Plus, Tag } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useUIStore } from '@/stores/use-ui-store';
 
 interface VariableViewGridProps {
   variables: Variable[];
@@ -12,6 +15,15 @@ export const VariableViewGrid: React.FC<VariableViewGridProps> = ({
   variables,
   onUpdateVariable,
 }) => {
+  const { setAddVariableOpen, setSelectedValueLabelVarId } = useUIStore();
+  const [activeSelectedVarId, setActiveSelectedVarId] = useState<string>(variables[0]?.id || '');
+
+  React.useEffect(() => {
+    if (variables.length > 0 && !activeSelectedVarId) {
+      setActiveSelectedVarId(variables[0].id);
+    }
+  }, [variables, activeSelectedVarId]);
+
   const columns: Column[] = [
     { columnId: '__index', width: 45, resizable: false },
     { columnId: 'name', width: 120, resizable: true },
@@ -19,7 +31,7 @@ export const VariableViewGrid: React.FC<VariableViewGridProps> = ({
     { columnId: 'width', width: 70, resizable: true },
     { columnId: 'decimals', width: 80, resizable: true },
     { columnId: 'label', width: 220, resizable: true },
-    { columnId: 'values', width: 150, resizable: true },
+    { columnId: 'values', width: 160, resizable: true },
     { columnId: 'missing', width: 110, resizable: true },
     { columnId: 'measure', width: 110, resizable: true },
     { columnId: 'role', width: 90, resizable: true },
@@ -146,22 +158,65 @@ export const VariableViewGrid: React.FC<VariableViewGridProps> = ({
   };
 
   return (
-    <SpreadsheetWrapper
-      title="Değişken Görünümü (SPSS Meta Veri Sözlüğü)"
-      countLabel={`${variables.length} tanımlı değişken`}
-    >
-      {variables.length === 0 ? (
-        <div className="flex items-center justify-center h-64 text-sm text-slate-500">
-          Değişken bulunamadı.
+    <div className="flex flex-col h-full w-full">
+      {/* Değişken İşlemleri Araç Çubuğu */}
+      <div className="flex items-center justify-between px-3 py-1.5 bg-slate-100 border-b border-slate-200 text-xs">
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setAddVariableOpen(true)}
+            className="h-7 px-2.5 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
+          >
+            <Plus className="h-3.5 w-3.5 mr-1 text-indigo-600" />
+            Yeni Değişken Ekle
+          </Button>
+
+          {variables.length > 0 && (
+            <div className="flex items-center space-x-1.5 ml-2">
+              <span className="text-slate-500 font-medium text-[11px]">Seçili Değişken:</span>
+              <select
+                value={activeSelectedVarId}
+                onChange={(e) => setActiveSelectedVarId(e.target.value)}
+                className="h-7 bg-white border border-slate-300 rounded px-2 text-xs focus:ring-1 focus:ring-blue-600 focus:outline-none"
+              >
+                {variables.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name} ({v.label || formatDataTypeTr(v.data_type)})
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedValueLabelVarId(activeSelectedVarId)}
+                className="h-7 px-2.5 text-xs bg-white text-slate-700 hover:bg-slate-50 border-slate-300"
+              >
+                <Tag className="h-3.5 w-3.5 mr-1 text-blue-600" />
+                Değer Etiketlerini Düzenle
+              </Button>
+            </div>
+          )}
         </div>
-      ) : (
-        <ReactGrid
-          rows={rows}
-          columns={columns}
-          onCellsChanged={handleCellsChanged}
-          enableRangeSelection
-        />
-      )}
-    </SpreadsheetWrapper>
+      </div>
+
+      <SpreadsheetWrapper
+        title="Değişken Görünümü (SPSS Meta Veri Sözlüğü)"
+        countLabel={`${variables.length} tanımlı değişken`}
+      >
+        {variables.length === 0 ? (
+          <div className="flex items-center justify-center h-64 text-sm text-slate-500">
+            Değişken bulunamadı.
+          </div>
+        ) : (
+          <ReactGrid
+            rows={rows}
+            columns={columns}
+            onCellsChanged={handleCellsChanged}
+            enableRangeSelection
+          />
+        )}
+      </SpreadsheetWrapper>
+    </div>
   );
 };
